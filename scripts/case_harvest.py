@@ -57,12 +57,20 @@ def build_tw(days):
     return {"start": start.isoformat(timespec="seconds"), "end": end.isoformat(timespec="seconds")}
 
 
+def norm_key(s):
+    return re.sub(r"[^a-z0-9]", "", (s or "").lower())
+
+
 def read_existing():
     if not os.path.exists(CASES_FILE):
-        return set(), set()
+        return set(), set(), set(), set()
     with open(CASES_FILE, "r", encoding="utf-8") as f:
         c = f.read()
-    return set(re.findall(r'slug:\s*"([^"]+)"', c)), set(re.findall(r'name:\s*"([^"]+)"', c))
+    slugs = set(re.findall(r'slug:\s*"([^"]+)"', c))
+    names = set(re.findall(r'name:\s*"([^"]+)"', c))
+    names_norm = {norm_key(n) for n in names if norm_key(n)}
+    sources_norm = {norm_key(s) for s in re.findall(r'source:\s*"([^"]+)"', c) if norm_key(s)}
+    return slugs, names, names_norm, sources_norm
 
 
 def ts_escape(s):
@@ -595,7 +603,7 @@ def merge_cases(content, new_cases):
     return before + "\n" + fmt + "\n" + after
 
 
-def extract_cases(fetched, exist_slugs, exist_names, max_n):
+def extract_cases(fetched, exist_slugs, exist_names, exist_names_norm, exist_sources_norm, max_n):
     extracted = []
     for fp in fetched:
         if len(extracted) >= max_n:
@@ -620,8 +628,21 @@ def extract_cases(fetched, exist_slugs, exist_names, max_n):
         if not slug:
             log(f"[跳过] 空slug")
             continue
-        if slug in exist_slugs or (name and name in exist_names):
-            log(f"[去重] {slug}")
+        nk = norm_key(name)
+        sk = norm_key(result.get("source", ""))
+        source_dup = False
+        if sk and sk in exist_sources_norm:
+            for ex in exist_names_norm:
+                if nk and (nk == ex or (nk in ex) or (ex in nk)):
+                    source_dup = True
+                    break
+        if slug in exist_slugs or (name and name in exist_names) or (nk and nk in exist_names_norm) or source_dup:
+            why = "slug/name"
+            if nk and nk in exist_names_norm:
+                why = f"语义(name归一化): {name}"
+            elif source_dup:
+                why = f"语义(source同名+name重叠): {result.get('source','')}"
+            log(f"[去重] {slug} ({why})")
             continue
         if result.get("deadCause") not in VALID_DEAD_CAUSES:
             log(f"[校验] 死因无效: {result.get('deadCause')}")
@@ -659,6 +680,10 @@ def extract_cases(fetched, exist_slugs, exist_names, max_n):
         }
         extracted.append(rec)
         exist_slugs.add(slug)
+        if nk:
+            exist_names_norm.add(nk)
+        if sk:
+            exist_sources_norm.add(sk)
         log(f"[✓] {slug} — {rec['name']} ({rec['deadCause']})")
     return extracted
 
@@ -683,7 +708,7 @@ def main():
     since_days = int(sys.argv[2]) if len(sys.argv) > 2 else 7
     log(f"[OPC] max={max_cases} since={since_days}d")
 
-    exist_slugs, exist_names = read_existing()
+    exist_slugs, exist_names, exist_names_norm, exist_sources_norm = read_existing()
     n0 = len(exist_slugs)
     log(f"[init] {n0} 条")
     if os.path.exists(CASES_FILE):
@@ -709,7 +734,7 @@ def main():
         return 0
 
     log(f"[3/4] LLM抽取 (max={max_cases})...")
-    new_cases = extract_cases(fetched, exist_slugs, exist_names, max_cases)
+    new_cases = extract_cases(fetched, exist_slugs, exist_names, exist_names_norm, exist_sources_norm, max_cases)
     log(f"[3/4] = {len(new_cases)} 条")
 
     if new_cases:
