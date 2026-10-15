@@ -1754,45 +1754,6 @@ export const CASES: CaseRecord[] = [
       "AI 技术本身不是需求，找到愿意付费的场景才是关键",
     ],
   },
-  {
-    slug: "qclaw-wechat-ai-assistant",
-    name: "腾讯 QClaw 微信远程办公 AI 助手",
-    founderBg: "腾讯内部孵化团队，依托腾讯微信生态与 AI 技术资源",
-    region: "中国",
-    industry: "AI 办公助手 / 企业服务",
-    startedAt: "",
-    closedAt: "2025-12-24",
-    investment: "",
-    source: "白鲸出海",
-    status: "dead",
-    lifespanMonths: 0,
-    fundingType: "自筹",
-    deadCause: "需求验证缺失",
-    deadCauseSub: "微信远程办公 AI 助手场景需求未被充分验证，用户规模与使用频次不足，腾讯选择主动收缩非核心业务线",
-    verified: true,
-    epitaph: "背靠微信十亿流量，却没能让 AI 助手在办公场景里活过产品周期。\n2025 年 12 月 24 日，QClaw 停运，新用户注册通道先行关闭。\n大厂光环，也救不了一个没被真正需要的工具。",
-    motivation: "QClaw 诞生于腾讯对微信生态内 AI 办公场景的探索。团队希望借助微信的社交与协作入口，把 AI 助手嵌入远程办公流程，让用户在聊天、文档、会议之间获得智能辅助。背靠腾讯的资源与微信的流量，项目一度被视为大厂切入 AI 办公赛道的重要尝试。然而，远程办公需求在疫情后回落，微信内办公场景的 AI 使用习惯并未真正建立，产品始终未能找到稳定的用户群与付费逻辑，最终走向停运。",
-    timeline: [
-      { time: "", event: "腾讯 QClaw 微信远程办公 AI 助手宣布停运" },
-      { time: "", event: "即日起停止新用户注册" },
-      { time: "", event: "产品正式关闭服务" },
-    ],
-    breakdown: [
-      { layer: "表层原因", detail: "产品宣布停运并停止新用户注册，用户无法继续使用服务" },
-      { layer: "中层原因", detail: "微信远程办公 AI 助手的使用场景未被充分验证，用户活跃度与留存不足" },
-      { layer: "深层原因", detail: "大厂内部孵化项目面临资源聚焦压力，非核心业务在 ROI 不达标时被优先收缩" },
-      { layer: "外部环境", detail: "远程办公需求在疫情后回落，AI 办公助手赛道竞争激烈，同质化严重" },
-    ],
-    lessons: [
-      "大厂流量不等于产品需求，微信入口无法自动转化为办公 AI 的使用习惯",
-      "远程办公 AI 助手需要验证真实高频场景，而非依赖概念热度",
-      "内部孵化项目若长期无法证明 ROI，容易被战略收缩",
-      "AI 工具类产品应尽早建立付费逻辑，避免依赖免费流量输血",
-      "停运前停止新用户注册是常见止损信号，创业者应关注产品生命周期管理",
-    ],
-  }
-];
-
 export function getCaseBySlug(slug: string): CaseRecord | undefined {
   return CASES.find((c) => c.slug === slug);
 }

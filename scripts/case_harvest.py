@@ -636,12 +636,22 @@ def extract_cases(fetched, exist_slugs, exist_names, exist_names_norm, exist_sou
                 if nk and (nk == ex or (nk in ex) or (ex in nk)):
                     source_dup = True
                     break
-        if slug in exist_slugs or (name and name in exist_names) or (nk and nk in exist_names_norm) or source_dup:
+        name_overlap = False
+        if nk:
+            for ex in exist_names_norm:
+                if not ex:
+                    continue
+                if nk == ex or (len(nk) >= 5 and len(ex) >= 5 and (nk in ex or ex in nk)):
+                    name_overlap = True
+                    break
+        if slug in exist_slugs or (name and name in exist_names) or (nk and nk in exist_names_norm) or source_dup or name_overlap:
             why = "slug/name"
             if nk and nk in exist_names_norm:
                 why = f"语义(name归一化): {name}"
             elif source_dup:
                 why = f"语义(source同名+name重叠): {result.get('source','')}"
+            elif name_overlap:
+                why = f"疑似(name子串重叠): {name}"
             log(f"[去重] {slug} ({why})")
             continue
         if result.get("deadCause") not in VALID_DEAD_CAUSES:
