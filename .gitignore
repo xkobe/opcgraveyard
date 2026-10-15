@@ -102,3 +102,6 @@ Desktop.ini
 .cozeproj/reduction
 .preview
 __pycache__/
+
+# CodeAct 采集报告（仅作 artifact，不入仓库）
+codeact/output/
