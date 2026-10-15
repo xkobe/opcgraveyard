@@ -122,7 +122,7 @@ def ddg_search(query, tw):
 
 
 def parse_rss_items(text):
-    """解析 RSS/Atom XML，返回 [{title, snippet, url, published}]。"""
+    """解析 RSS/Atom XML，返回 [{title, snippet, url, published}]。兼容 CDATA/嵌套 HTML。"""
     import xml.etree.ElementTree as ET
     items = []
     try:
@@ -138,13 +138,15 @@ def parse_rss_items(text):
         for child in item:
             ct = child.tag.rsplit("}", 1)[-1]
             if ct == "title":
-                title = (child.text or "").strip()
+                title = "".join(child.itertext()).strip()
             elif ct in ("description", "summary", "content"):
-                snippet = re.sub(r"<[^>]+>", "", child.text or "")[:300]
+                # itertext 兼容 CDATA 内嵌套 HTML，取纯文本摘要
+                snippet = "".join(child.itertext()).strip()
+                snippet = re.sub(r"<[^>]+>", "", snippet)[:500]
             elif ct == "link":
-                url = child.text or child.get("href") or ""
+                url = "".join(child.itertext()).strip() or child.get("href") or ""
             elif ct in ("pubDate", "published", "updated"):
-                published = (child.text or "").strip()
+                published = "".join(child.itertext()).strip()
         if title and url:
             items.append({"title": title, "snippet": snippet, "url": url.strip(), "published": published})
     return items
@@ -185,12 +187,14 @@ def google_news_search(query, tw, days):
         return []
 
 
+HN_STRONG = ["shut down", "shutting down", "we shut", "closed our", "we closed", "failed", "postmortem", "post-mortem", "died", "sunset", "winding down", "wind down", "killed our", "abandoned", "laid off", "bankrupt", "out of business", "called it quits", "shut the doors", "we're shutting", "shut it down", "shut the company", "close the company", "closing down", "gave up", "pulled the plug", "ran out of money", "dissolved", "had to shut", "decided to shut", "had to close", "shut down our", "shutting down our", "we closed down", "closed down"]
+
 def hn_search(query, days):
-    """Hacker News Algolia API 搜索（稳定免费，英文创业社区）。宽窗口 60 天保证召回。
+    """Hacker News Algolia API 搜索（稳定免费）。全文搜索 + 强失败信号词过滤。
     返回 item 自带 body（story_text，复盘帖正文通常很长，无需外部抓取）。"""
     ts = int((datetime.now(TZ_CST) - timedelta(days=max(days, 60))).timestamp())
     url = ("https://hn.algolia.com/api/v1/search?query=" + urllib.parse.quote(query) +
-           f"&tags=story&hitsPerPage=20&numericFilters=created_at_i%3E{ts}")
+           f"&tags=story&hitsPerPage=50&numericFilters=created_at_i%3E{ts}")
     try:
         r = requests.get(url, headers={"User-Agent": UA}, timeout=25)
         if r.status_code != 200:
@@ -202,17 +206,17 @@ def hn_search(query, days):
             title = h.get("title") or h.get("story_title") or ""
             st = (h.get("story_text") or "").strip()
             u = h.get("url") or h.get("story_url") or ""
-            # 清洗 story_text 里的 HTML
             if st:
                 st = re.sub(r"<[^>]+>", " ", st)
                 st = re.sub(r"\s+", " ", st).strip()
+            hay = (str(title) + " " + st).lower()
+            # 只保留强失败信号且带自带正文的自发帖（外部新闻链接在 Actions 抓不到正文，放弃）
+            if not any(k in hay for k in HN_STRONG):
+                continue
             if st and len(st) > 100:
                 out.append({"title": title, "snippet": st[:300],
                             "url": u, "published": h.get("created_at", ""),
                             "body": st, "is_selfpost": True})
-            elif u:
-                out.append({"title": title, "snippet": (h.get("story_text") or "")[:300],
-                            "url": u, "published": h.get("created_at", "")})
         log(f"[HN] {len(out)} items for {query[:30]}")
         return out
     except Exception as e:
