@@ -405,11 +405,19 @@ def fetch_all(cands, n=20):
             if dec:
                 log(f"[fetch] GNews解码成功: {dec[:70]}")
                 res = fetch_page(dec)
+                if res and len(res[0]) > 200:
+                    ok.append({"item": it, "content": res[0], "final_url": res[1], "source": "fetch"})
+                    time.sleep(0.5)
+                    continue
+                log(f"[fetch] GNews解码后抓取失败, 摘要兜底")
+            body = it.get("body") or it.get("snippet") or ""
+            if len(body) > 60:
+                ok.append({"item": it, "content": body, "final_url": u, "source": "body"})
             else:
-                log(f"[fetch] 跳过GNews跳转(解码失败): {u[:60]}")
-                continue
-        else:
-            res = fetch_page(u)
+                log(f"[fetch] 跳过GNews(解码失败且无摘要): {u[:60]}")
+            time.sleep(0.5)
+            continue
+        res = fetch_page(u)
         if res and len(res[0]) > 200:
             ok.append({"item": it, "content": res[0], "final_url": res[1], "source": "fetch"})
         elif res:
@@ -459,7 +467,9 @@ def call_llm(prompt, retries=1):
                 log(f"[LLM] HTTP {r.status_code}: {r.text[:200]}")
                 return None
             data = r.json()
-            content = data["choices"][0]["message"]["content"]
+            ch0 = data["choices"][0]
+            content = ch0["message"]["content"]
+            log(f"[LLM] finish={ch0.get('finish_reason')} use={data.get('usage', {}).get('completion_tokens')}t len={len(content)}")
             # 清理可能的 markdown code fence
             content = re.sub(r"```(?:json)?\s*|\s*```", "", content).strip()
             # 1) 整段就是 JSON
@@ -486,7 +496,8 @@ def call_llm(prompt, retries=1):
                 fixed = fix_json_content(content, prompt)
                 if fixed is not None:
                     return fixed
-                log(f"[LLM] fix fail content_head: {content[:120]!r}")
+                log(f"[LLM] fix fail head: {content[:80]!r}")
+                log(f"[LLM] fix fail tail: {content[-160:]!r}")
                 return None
         except Exception as e:
             log(f"[LLM] attempt {attempt+1} error: {str(e)[:120]}")
@@ -512,25 +523,26 @@ def fix_json_content(content, orig_prompt):
         "max_tokens": 8192,
         "response_format": {"type": "json_object"},
     }
-    try:
-        r = requests.post(f"{LLM_API_BASE}/chat/completions", headers=headers, json=payload, timeout=120)
-        if r.status_code != 200:
-            log(f"[LLM-fix] HTTP {r.status_code}")
-            return None
-        data = r.json()
-        c = data["choices"][0]["message"]["content"]
-        c = re.sub(r"```(?:json)?\s*|\s*```", "", c).strip()
+    for fix_try in range(2):
         try:
-            return json.loads(c)
-        except Exception:
-            try:
-                obj, _ = json.JSONDecoder().raw_decode(c, c.find("{"))
-                return obj
-            except Exception:
+            r = requests.post(f"{LLM_API_BASE}/chat/completions", headers=headers, json=payload, timeout=120)
+            if r.status_code != 200:
+                log(f"[LLM-fix] HTTP {r.status_code}")
                 return None
-    except Exception as e:
-        log(f"[LLM-fix] error: {str(e)[:100]}")
-        return None
+            data = r.json()
+            c = data["choices"][0]["message"]["content"]
+            c = re.sub(r"```(?:json)?\s*|\s*```", "", c).strip()
+            try:
+                return json.loads(c)
+            except Exception:
+                try:
+                    obj, _ = json.JSONDecoder().raw_decode(c, c.find("{"))
+                    return obj
+                except Exception:
+                    log(f"[LLM-fix] try{fix_try+1} still invalid, head={c[:60]!r}")
+        except Exception as e:
+            log(f"[LLM-fix] error: {str(e)[:100]}")
+    return None
 
 
 def format_case_ts(rec):
