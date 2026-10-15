@@ -209,7 +209,7 @@ def hn_search(query, days):
     返回 item 自带 body（story_text，复盘帖正文通常很长，无需外部抓取）。"""
     ts = int((datetime.now(TZ_CST) - timedelta(days=max(days, 60))).timestamp())
     url = ("https://hn.algolia.com/api/v1/search?query=" + urllib.parse.quote(query) +
-           f"&tags=story&hitsPerPage=50&numericFilters=created_at_i%3E{ts}")
+           f"&tags=story&hitsPerPage=100&numericFilters=created_at_i%3E{ts}")
     try:
         r = requests.get(url, headers={"User-Agent": UA}, timeout=25)
         if r.status_code != 200:
@@ -292,7 +292,7 @@ def search_all(since_days):
         items = google_news_search(q, tw, since_days)
         items.sort(key=lambda x: 1 if (x.get("body") or "") else 0, reverse=True)
         for it in items:
-            if qn >= 3:
+            if qn >= 5:
                 break
             add_dedup(pools["gnews"], it)
             qn += 1
@@ -302,7 +302,7 @@ def search_all(since_days):
     for q in HN_QUERIES:
         qn = 0
         for it in hn_search(q, since_days):
-            if qn >= 6:
+            if qn >= 10:
                 break
             add_dedup(pools["hn"], it)
             qn += 1
@@ -701,7 +701,7 @@ def main():
         return 0
 
     log("[2/4] Fetch...")
-    fetched = fetch_all(cands, n=20)
+    fetched = fetch_all(cands, n=30)
     if not fetched:
         with open(rpath, "w", encoding="utf-8") as f:
             f.write(gen_report([], n0))

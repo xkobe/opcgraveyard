@@ -30,7 +30,7 @@ jobs:
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
           LLM_API_BASE: ${{ secrets.LLM_API_BASE }}
           LLM_MODEL: ${{ secrets.LLM_MODEL }}
-        run: python scripts/case_harvest.py 10 7
+        run: python scripts/case_harvest.py 20 60
 
       - name: Verify cases file
         run: |
