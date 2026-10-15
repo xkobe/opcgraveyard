@@ -58,7 +58,8 @@ def build_tw(days):
 
 
 def norm_key(s):
-    return re.sub(r"[^a-z0-9]", "", (s or "").lower())
+    # 保留中英文与数字，中文名归一化后不再为空，语义去重才能覆盖中文案例
+    return re.sub(r"[^a-z0-9\u4e00-\u9fff]", "", (s or "").lower())
 
 
 def read_existing():
@@ -71,6 +72,21 @@ def read_existing():
     names_norm = {norm_key(n) for n in names if norm_key(n)}
     sources_norm = {norm_key(s) for s in re.findall(r'source:\s*"([^"]+)"', c) if norm_key(s)}
     return slugs, names, names_norm, sources_norm
+
+
+# 人工核实的误提取黑名单：这些 slug/关键词命中的结果直接跳过，防止反复回采
+BLOCKED_SLUGS = {
+    "wii-u", "koko-networks", "anthropic-claude-code",
+    "anthropic-claude-2-1-shutdown", "deepseek-founder-dispute",
+}
+BLOCKED_KEYWORDS = ["claude-code", "claude2", "wiiu", "kokonetworks", "deepseek"]
+
+
+def is_blocked(slug, name, source):
+    if slug in BLOCKED_SLUGS:
+        return True
+    text = norm_key(f"{name} {source}")
+    return any(kw in text for kw in BLOCKED_KEYWORDS)
 
 
 def ts_escape(s):
@@ -439,6 +455,10 @@ EXTRACT_PROMPT = """你是创业失败案例研究员。阅读文章,提取 1 �
 
 规则:
 - 只提取真实案例。若无, slug 返回空字符串。
+- 必须排除: 活跃大厂（OpenAI/Anthropic/DeepSeek/Google/Microsoft/Meta/字节/腾讯/阿里等）的模型版本退役、功能下线、招聘/面试纠纷、高管争议、内部调整——这些不是创业失败案例。
+- 案例主体必须是 AI/科技相关的创业公司、独立开发者产品、项目，且已死亡/被收购/明确失败。
+- 若文章报道的产品/公司与"已有案例"列表中的任何一条是同一家（名称可能不同，如"VinoVest"与"未具名葡萄酒科技创业公司"），不要提取，slug 返回空字符串。
+- 已有案例(仅作重复判断参考): {existing}
 - 所有字段基于文章事实, 不编造。多个案例取最详细的 1 个。
 - JSON 字符串值中所有双引号必须转义为 \"，禁止输出未转义的双引号。
 - timelineJson/breakdownJson/lessonsJson 必须是真实 JSON 数组（不是字符串）。timelineJson 每项是 {{"date": "...", "event": "..."}} 对象；breakdownJson 每项是 {{"factor": "...", "weight": ...}} 对象；lessonsJson 每项是字符串。示例: "timelineJson":[{{"date":"2024-01","event":"成立"}}]
@@ -620,7 +640,8 @@ def extract_cases(fetched, exist_slugs, exist_names, exist_names_norm, exist_sou
         final_url = fp.get("final_url") or url
         if len(content) > 8000:
             content = content[:8000] + "\n[已截断]"
-        prompt = EXTRACT_PROMPT.format(url=url, content=content)
+        existing = "、".join(sorted(exist_names)[:120]) or "（无）"
+        prompt = EXTRACT_PROMPT.format(url=url, content=content, existing=existing)
         try:
             result = call_llm(prompt)
         except Exception as e:
@@ -634,6 +655,9 @@ def extract_cases(fetched, exist_slugs, exist_names, exist_names_norm, exist_sou
         name = str(result.get("name", "")).strip()
         if not slug:
             log(f"[跳过] 空slug")
+            continue
+        if is_blocked(slug, name, result.get("source", "")):
+            log(f"[黑名单] {slug} ({name})")
             continue
         nk = norm_key(name)
         sk = norm_key(result.get("source", ""))
