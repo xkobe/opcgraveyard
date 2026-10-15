@@ -81,7 +81,9 @@ def is_relevant(title, snippet=""):
 
 
 def safe_json_array(raw):
-    if not raw or not raw.strip():
+    if isinstance(raw, list):
+        return raw
+    if not raw or not isinstance(raw, str) or not raw.strip():
         return []
     m = re.search(r'\[.*\]', raw, re.DOTALL)
     if m:
