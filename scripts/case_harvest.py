@@ -35,8 +35,8 @@ VALID_STATUSES = ["dead", "acquired", "pivoted"]
 VALID_FUNDING_TYPES = ["自筹", "融资", "混合"]
 TZ_CST = timezone(timedelta(hours=8))
 
-SEARCH_KW_ZH = ["AI创业失败 倒闭 关停 复盘", "独立开发者 失败 项目放弃 一人公司", "AI产品关停 停止运营 创业复盘"]
-SEARCH_KW_EN = ["AI startup failure shutdown postmortem", "indie hacker project failure abandoned", "solo founder AI startup closed down"]
+SEARCH_KW_ZH = ["AI创业失败", "AI公司倒闭", "AI产品关停", "创业失败复盘", "独立开发者 失败", "AI创业 关停"]
+SEARCH_KW_EN = ["AI startup shutdown", "startup postmortem", "AI company closed", "indie hacker abandoned", "startup failure story"]
 HN_QUERIES = ["startup shutdown", "startup postmortem", "indie hacker failed", "AI product shutdown", "startup failed founders"]
 RELEVANCE_KW = ["失败", "倒闭", "关停", "关闭", "停止运营", "注销", "放弃", "解散", "破产", "shutdown", "closed", "shut down", "failed", "failure", "postmortem", "sunset", "discontinued", "abandoned", "laid off", "停止", "亏损", "烧光"]
 
