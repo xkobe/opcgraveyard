@@ -27,11 +27,10 @@ jobs:
 
       - name: Run case harvest
         env:
-          SEARCH_API_KEY: ${{ secrets.SEARCH_API_KEY }}
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
           LLM_API_BASE: ${{ secrets.LLM_API_BASE }}
           LLM_MODEL: ${{ secrets.LLM_MODEL }}
-        run: python scripts/case_harvest.py --max 10 --since-days 30
+        run: python scripts/case_harvest.py 10 7
 
       - name: Verify cases file
         run: |
