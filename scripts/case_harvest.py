@@ -431,8 +431,8 @@ EXTRACT_PROMPT = """你是创业失败案例研究员。阅读文章,提取 1 �
 - 只提取真实案例。若无, slug 返回空字符串。
 - 所有字段基于文章事实, 不编造。多个案例取最详细的 1 个。
 - JSON 字符串值中所有双引号必须转义为 \"，禁止输出未转义的双引号。
-- timelineJson/breakdownJson/lessonsJson 必须是真实 JSON 数组（不是字符串）。timelineJson 每项是 {"date": "...", "event": "..."} 对象；breakdownJson 每项是 {"factor": "...", "weight": ...} 对象；lessonsJson 每项是字符串。示例: "timelineJson":[{"date":"2024-01","event":"成立"}]
-- 输出必须是一个完整的 JSON 对象，不要截断。示例: "timelineJson":[{{"date":"2024-01","event":"成立"}}]
+- timelineJson/breakdownJson/lessonsJson 必须是真实 JSON 数组（不是字符串）。timelineJson 每项是 {{"date": "...", "event": "..."}} 对象；breakdownJson 每项是 {{"factor": "...", "weight": ...}} 对象；lessonsJson 每项是字符串。示例: "timelineJson":[{{"date":"2024-01","event":"成立"}}]
+- 输出必须是一个完整的 JSON 对象，不要截断。
 - slug: 全小写英文短横线
 - deadCause 必须六选一: 获客失败, 需求验证缺失, 商业模式脆弱, 成本结构失衡, 同质化竞争, 合规与决策风险
 - epitaph: 2-3行墓志铭含关键数字
