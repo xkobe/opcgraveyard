@@ -3,8 +3,8 @@
 OPC Case Harvest (GitHub Actions 版) — 一人公司坟场 AI OPC 失败案例每日自动采集与入库
 
 与 CodeAct 沙箱版不同，本脚本不依赖 codeact_sdk，可在 GitHub Actions ubuntu-latest 独立运行：
-  1. 公开搜索：DuckDuckGo HTML（无需 API key，避免额外付费依赖）
-  2. 并发抓取正文：requests + BeautifulSoup
+  1. 多源搜索：Google News RSS（中英）+ Hacker News Algolia（英文社区）+ 中文媒体 RSS（36氪），失败自动降级
+  2. 并发抓取正文：requests + BeautifulSoup（Google News 跳转自动跟随到原文）
   3. LLM 抽取：OpenAI 兼容 /chat/completions（LLM_API_KEY / LLM_API_BASE / LLM_MODEL 由 secrets 注入）
   4. 严格校验（六死因、timeline/breakdown/lessons 数量）后追加 src/data/cases.ts
   5. 生成采集报告 codeact/output/opc_cases_YYYYMMDD.md
@@ -37,6 +37,7 @@ TZ_CST = timezone(timedelta(hours=8))
 
 SEARCH_KW_ZH = ["AI创业失败 倒闭 关停 复盘", "独立开发者 失败 项目放弃 一人公司", "AI产品关停 停止运营 创业复盘"]
 SEARCH_KW_EN = ["AI startup failure shutdown postmortem", "indie hacker project failure abandoned", "solo founder AI startup closed down"]
+HN_QUERIES = ["startup shutdown", "startup postmortem", "indie hacker failed", "AI product shutdown", "startup failed founders"]
 RELEVANCE_KW = ["失败", "倒闭", "关停", "关闭", "停止运营", "注销", "放弃", "解散", "破产", "shutdown", "closed", "shut down", "failed", "failure", "postmortem", "sunset", "discontinued", "abandoned", "laid off", "停止", "亏损", "烧光"]
 
 LLM_API_KEY = os.environ.get("LLM_API_KEY", "")
@@ -92,7 +93,7 @@ def safe_json_array(raw):
 
 
 def ddg_search(query, tw):
-    """DuckDuckGo HTML 搜索，返回 [{title, snippet, url}]，按时间窗过滤（近似，标题含年份判断）。"""
+    """DuckDuckGo HTML 搜索（备用源，可能被反爬返回 202）。"""
     params = {"q": query, "kl": "cn-zh" if any('\u4e00' <= ch <= '\u9fff' for ch in query) else "us-en"}
     url = "https://html.duckduckgo.com/html/?" + urllib.parse.urlencode(params)
     try:
@@ -110,7 +111,6 @@ def ddg_search(query, tw):
             title = a.get_text(" ", strip=True)
             snippet = sn.get_text(" ", strip=True) if sn else ""
             href = a["href"]
-            # DDG 跳转链接里含 uddg= 编码的真实 URL
             m = re.search(r'uddg=([^&]+)', href)
             real = urllib.parse.unquote(m.group(1)) if m else href
             if real.startswith("http"):
@@ -121,26 +121,154 @@ def ddg_search(query, tw):
         return []
 
 
+def parse_rss_items(text):
+    """解析 RSS/Atom XML，返回 [{title, snippet, url, published}]。"""
+    import xml.etree.ElementTree as ET
+    items = []
+    try:
+        root = ET.fromstring(text)
+    except Exception as e:
+        log(f"[RSS] parse error: {e}")
+        return items
+    for item in root.iter():
+        tag = item.tag.rsplit("}", 1)[-1]
+        if tag not in ("item", "entry"):
+            continue
+        title = snippet = url = published = ""
+        for child in item:
+            ct = child.tag.rsplit("}", 1)[-1]
+            if ct == "title":
+                title = (child.text or "").strip()
+            elif ct in ("description", "summary", "content"):
+                snippet = re.sub(r"<[^>]+>", "", child.text or "")[:300]
+            elif ct == "link":
+                url = child.text or child.get("href") or ""
+            elif ct in ("pubDate", "published", "updated"):
+                published = (child.text or "").strip()
+        if title and url:
+            items.append({"title": title, "snippet": snippet, "url": url.strip(), "published": published})
+    return items
+
+
+def google_news_search(query, tw, days):
+    """Google News RSS 搜索，返回 [{title, snippet, url, published}]。Actions 环境(美国IP)通常可用。"""
+    hl = "zh-CN" if any('\u4e00' <= ch <= '\u9fff' for ch in query) else "en-US"
+    gl = "CN" if hl == "zh-CN" else "US"
+    ceid = "CN:zh-Hans" if hl == "zh-CN" else "US:en"
+    # after: 语法限制时间窗
+    after = (datetime.now(TZ_CST) - timedelta(days=days)).strftime("%Y-%m-%d")
+    q = f"{query} after:{after}"
+    url = ("https://news.google.com/rss/search?q=" + urllib.parse.quote(q) +
+           f"&hl={hl}&gl={gl}&ceid={ceid}")
+    try:
+        r = requests.get(url, headers={"User-Agent": UA}, timeout=12)
+        if r.status_code != 200:
+            log(f"[GNews] HTTP {r.status_code}")
+            return []
+        ct = r.headers.get("Content-Type", "")
+        if "xml" not in ct and "rss" not in ct:
+            log(f"[GNews] not RSS: {ct}")
+            return []
+        items = parse_rss_items(r.text)
+        # Google News 的 link 是跳转 URL，保留原始 news.google.com 链接可 fetch 跟随到原文
+        log(f"[GNews] {len(items)} items for {query[:30]}")
+        return items
+    except Exception as e:
+        log(f"[GNews] error {query[:30]}: {e}")
+        return []
+
+
+def hn_search(query, days):
+    """Hacker News Algolia API 搜索（稳定免费，英文创业社区）。"""
+    ts = int((datetime.now(TZ_CST) - timedelta(days=days)).timestamp())
+    url = ("https://hn.algolia.com/api/v1/search?query=" + urllib.parse.quote(query) +
+           f"&tags=story&hitsPerPage=15&numericFilters=created_at_i%3E{ts}")
+    try:
+        r = requests.get(url, headers={"User-Agent": UA}, timeout=25)
+        if r.status_code != 200:
+            log(f"[HN] HTTP {r.status_code}")
+            return []
+        d = r.json()
+        out = []
+        for h in d.get("hits", []):
+            title = h.get("title") or h.get("story_title") or ""
+            u = h.get("url") or h.get("story_url") or ""
+            if u:
+                out.append({"title": title, "snippet": (h.get("story_text") or "")[:300],
+                            "url": u, "published": h.get("created_at", "")})
+        log(f"[HN] {len(out)} items for {query[:30]}")
+        return out
+    except Exception as e:
+        log(f"[HN] error {query[:30]}: {e}")
+        return []
+
+
+def cn_media_search(days):
+    """直接抓取中文科技媒体 RSS（36氪），按关键词筛选。仅解析 XML。"""
+    sources = {
+        "36kr": "https://36kr.com/feed",
+    }
+    out = []
+    for name, url in sources.items():
+        try:
+            r = requests.get(url, headers={"User-Agent": UA}, timeout=20)
+            if r.status_code != 200:
+                log(f"[{name}] HTTP {r.status_code}")
+                continue
+            ct = r.headers.get("Content-Type", "")
+            if "xml" not in ct and "rss" not in ct:
+                log(f"[{name}] not RSS: {ct}")
+                continue
+            items = parse_rss_items(r.text)
+            log(f"[{name}] {len(items)} items")
+            for it in items:
+                if is_relevant(it["title"], it["snippet"]):
+                    it["sourceName"] = name
+                    out.append(it)
+        except Exception as e:
+            log(f"[{name}] error: {e}")
+    log(f"[中文媒体] {len(out)} 命中")
+    return out
+
+
 def search_all(since_days):
     tw = build_tw(since_days)
-    queries = SEARCH_KW_ZH + SEARCH_KW_EN
     cands, seen = [], set()
-    for q in queries:
-        time.sleep(1.2)
-        for it in ddg_search(q, tw):
-            u = norm_url(it.get("url", ""))
-            if u and u not in seen and is_relevant(it.get("title", ""), it.get("snippet", "")):
-                seen.add(u)
-                cands.append(it)
+
+    def add(it):
+        u = norm_url(it.get("url", ""))
+        if u and u not in seen and is_relevant(it.get("title", ""), it.get("snippet", "")):
+            seen.add(u)
+            cands.append(it)
+
+    # 1) Google News RSS（中英文关键词）
+    for q in SEARCH_KW_ZH + SEARCH_KW_EN:
+        for it in google_news_search(q, tw, since_days):
+            add(it)
+        time.sleep(1.0)
+
+    # 2) Hacker News（宽泛英文词，社区复盘内容多）
+    for q in HN_QUERIES:
+        for it in hn_search(q, since_days):
+            add(it)
+        time.sleep(1.0)
+
+    # 3) 中文媒体 RSS 直抓
+    for it in cn_media_search(since_days):
+        add(it)
+
     log(f"[搜索] {len(cands)} 候选")
     return cands
 
 
-def fetch_page(url, timeout=20):
+def fetch_page(url, timeout=25):
+    """抓取网页正文。Google News 跳转链接会自动跟随到原文。"""
     try:
-        r = requests.get(url, headers={"User-Agent": UA}, timeout=timeout)
+        r = requests.get(url, headers={"User-Agent": UA}, timeout=timeout, allow_redirects=True)
         if r.status_code != 200:
             return None
+        # 跟随后的最终 URL（Google News 原文）
+        final_url = r.url
         ct = r.headers.get("Content-Type", "")
         if "html" not in ct and "text" not in ct and "json" not in ct:
             return None
@@ -149,7 +277,7 @@ def fetch_page(url, timeout=20):
             t.decompose()
         text = soup.get_text("\n", strip=True)
         text = re.sub(r"\n{3,}", "\n\n", text)
-        return text
+        return text, final_url
     except Exception as e:
         log(f"[fetch] {url[:60]}: {e}")
         return None
@@ -158,9 +286,9 @@ def fetch_page(url, timeout=20):
 def fetch_all(cands, n=8):
     ok = []
     for it in cands[:n]:
-        ct = fetch_page(it["url"])
-        if ct and len(ct) > 200:
-            ok.append({"item": it, "content": ct})
+        res = fetch_page(it["url"])
+        if res and len(res[0]) > 200:
+            ok.append({"item": it, "content": res[0], "final_url": res[1]})
         time.sleep(0.6)
     log(f"[fetch] {len(ok)} 有效")
     return ok
@@ -175,8 +303,8 @@ EXTRACT_PROMPT = """你是创业失败案例研究员。阅读文章,提取 1 �
 - deadCause 必须六选一: 获客失败, 需求验证缺失, 商业模式脆弱, 成本结构失衡, 同质化竞争, 合规与决策风险
 - epitaph: 2-3行墓志铭含关键数字
 - motivation: 100-200字创业动机
-- timelineJson: JSON数组字符串 如 [{"time":"2024","event":"成立"}] 3-6个元素
-- breakdownJson: JSON数组字符串 如 [{"layer":"表层原因","detail":"说明"}] 至少3个
+- timelineJson: JSON数组字符串 如 [{{"time":"2024","event":"成立"}}] 3-6个元素
+- breakdownJson: JSON数组字符串 如 [{{"layer":"表层原因","detail":"说明"}}] 至少3个
 - lessonsJson: JSON字符串数组 如 ["教训1","教训2","教训3"] 3-5条
 - source: 报道媒体名
 
@@ -265,6 +393,7 @@ def extract_cases(fetched, exist_slugs, exist_names, max_n):
             break
         content = fp["content"]
         url = fp["item"].get("url", "")
+        final_url = fp.get("final_url") or url
         if len(content) > 8000:
             content = content[:8000] + "\n[已截断]"
         prompt = EXTRACT_PROMPT.format(url=url, content=content)
@@ -317,7 +446,7 @@ def extract_cases(fetched, exist_slugs, exist_names, max_n):
             "deadCause": str(result.get("deadCause", "")), "deadCauseSub": str(result.get("deadCauseSub", "")),
             "source": str(result.get("source", "")), "verified": bool(result.get("verified", True)),
             "epitaph": str(result.get("epitaph", "")), "motivation": str(result.get("motivation", "")),
-            "timeline": tl, "breakdown": bd, "lessons": ls, "sourceUrl": url,
+            "timeline": tl, "breakdown": bd, "lessons": ls, "sourceUrl": final_url,
         }
         extracted.append(rec)
         exist_slugs.add(slug)
