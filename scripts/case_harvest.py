@@ -179,10 +179,10 @@ def google_news_search(query, tw, days):
 
 
 def hn_search(query, days):
-    """Hacker News Algolia API 搜索（稳定免费，英文创业社区）。"""
-    ts = int((datetime.now(TZ_CST) - timedelta(days=days)).timestamp())
+    """Hacker News Algolia API 搜索（稳定免费，英文创业社区）。宽窗口 60 天保证召回，靠 slug 去重。"""
+    ts = int((datetime.now(TZ_CST) - timedelta(days=max(days, 60))).timestamp())
     url = ("https://hn.algolia.com/api/v1/search?query=" + urllib.parse.quote(query) +
-           f"&tags=story&hitsPerPage=15&numericFilters=created_at_i%3E{ts}")
+           f"&tags=story&hitsPerPage=20&numericFilters=created_at_i%3E{ts}")
     try:
         r = requests.get(url, headers={"User-Agent": UA}, timeout=25)
         if r.status_code != 200:
@@ -204,19 +204,23 @@ def hn_search(query, days):
 
 
 def cn_media_search(days):
-    """直接抓取中文科技媒体 RSS（36氪），按关键词筛选。仅解析 XML。"""
+    """直接抓取中文科技媒体 RSS，按关键词筛选。仅解析 XML；多源候选，哪个可用用哪个。"""
     sources = {
         "36kr": "https://36kr.com/feed",
+        "huxiu": "https://www.huxiu.com/rss/0.xml",
+        "ifanr": "https://www.ifanr.com/feed",
+        "pingwest": "https://www.pingwest.com/feed",
+        "donews": "https://www.donews.com/rss",
     }
     out = []
     for name, url in sources.items():
         try:
-            r = requests.get(url, headers={"User-Agent": UA}, timeout=20)
+            r = requests.get(url, headers={"User-Agent": UA}, timeout=15)
             if r.status_code != 200:
                 log(f"[{name}] HTTP {r.status_code}")
                 continue
             ct = r.headers.get("Content-Type", "")
-            if "xml" not in ct and "rss" not in ct:
+            if "xml" not in ct and "rss" not in ct and "atom" not in ct:
                 log(f"[{name}] not RSS: {ct}")
                 continue
             items = parse_rss_items(r.text)
@@ -315,7 +319,7 @@ slug,name,status,founderBg,region,industry,startedAt,closedAt,lifespanMonths,inv
 {content}"""
 
 
-def call_llm(prompt):
+def call_llm(prompt, retries=1):
     if not LLM_API_KEY or not LLM_API_BASE or not LLM_MODEL:
         raise RuntimeError("LLM env missing: LLM_API_KEY/LLM_API_BASE/LLM_MODEL")
     headers = {"Authorization": f"Bearer {LLM_API_KEY}", "Content-Type": "application/json"}
@@ -325,17 +329,26 @@ def call_llm(prompt):
         "temperature": 0.2,
         "response_format": {"type": "json_object"},
     }
-    r = requests.post(f"{LLM_API_BASE}/chat/completions", headers=headers, json=payload, timeout=120)
-    if r.status_code != 200:
-        log(f"[LLM] HTTP {r.status_code}: {r.text[:200]}")
-        return None
-    data = r.json()
-    content = data["choices"][0]["message"]["content"]
-    m = re.search(r'\{.*\}', content, re.DOTALL)
-    if not m:
-        log("[LLM] no JSON in response")
-        return None
-    return json.loads(m.group())
+    for attempt in range(retries + 1):
+        try:
+            r = requests.post(f"{LLM_API_BASE}/chat/completions", headers=headers, json=payload, timeout=120)
+            if r.status_code != 200:
+                log(f"[LLM] HTTP {r.status_code}: {r.text[:200]}")
+                return None
+            data = r.json()
+            content = data["choices"][0]["message"]["content"]
+            # 清理可能的 markdown code fence
+            content = re.sub(r"```(?:json)?\s*|\s*```", "", content).strip()
+            m = re.search(r'\{.*\}', content, re.DOTALL)
+            if not m:
+                log("[LLM] no JSON in response")
+                return None
+            return json.loads(m.group())
+        except Exception as e:
+            log(f"[LLM] attempt {attempt+1} error: {str(e)[:120]}")
+            if attempt == retries:
+                return None
+    return None
 
 
 def format_case_ts(rec):
@@ -492,7 +505,7 @@ def main():
         return 0
 
     log("[2/4] Fetch...")
-    fetched = fetch_all(cands, n=8)
+    fetched = fetch_all(cands, n=12)
     if not fetched:
         with open(rpath, "w", encoding="utf-8") as f:
             f.write(gen_report([], n0))
