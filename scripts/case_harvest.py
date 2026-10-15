@@ -283,9 +283,12 @@ def search_all(since_days):
             pool.append(it)
 
     # 1) Google News RSS（中英文关键词，搜索词已保证相关，只去重，每词前 3 条防霸榜）
+    #    优先取带摘要 body 的条目，避免把无正文的中文词条排进 fetch 名额
     for q in SEARCH_KW_ZH + SEARCH_KW_EN:
         qn = 0
-        for it in google_news_search(q, tw, since_days):
+        items = google_news_search(q, tw, since_days)
+        items.sort(key=lambda x: 1 if (x.get("body") or "") else 0, reverse=True)
+        for it in items:
             if qn >= 3:
                 break
             add_dedup(pools["gnews"], it)
@@ -398,9 +401,15 @@ def fetch_all(cands, n=20):
             break
         u = it.get("url", "")
         if "news.google.com/rss/articles" in u:
-            log(f"[fetch] 跳过GNews跳转: {u[:60]}")
-            continue
-        res = fetch_page(u)
+            dec = gnews_decode(u)
+            if dec:
+                log(f"[fetch] GNews解码成功: {dec[:70]}")
+                res = fetch_page(dec)
+            else:
+                log(f"[fetch] 跳过GNews跳转(解码失败): {u[:60]}")
+                continue
+        else:
+            res = fetch_page(u)
         if res and len(res[0]) > 200:
             ok.append({"item": it, "content": res[0], "final_url": res[1], "source": "fetch"})
         elif res:
@@ -415,6 +424,7 @@ EXTRACT_PROMPT = """你是创业失败案例研究员。阅读文章,提取 1 �
 规则:
 - 只提取真实案例。若无, slug 返回空字符串。
 - 所有字段基于文章事实, 不编造。多个案例取最详细的 1 个。
+- JSON 字符串值中所有双引号必须转义为 \"，禁止输出未转义的双引号。
 - slug: 全小写英文短横线
 - deadCause 必须六选一: 获客失败, 需求验证缺失, 商业模式脆弱, 成本结构失衡, 同质化竞争, 合规与决策风险
 - epitaph: 2-3行墓志铭含关键数字
@@ -471,13 +481,56 @@ def call_llm(prompt, retries=1):
             try:
                 return json.loads(m.group())
             except Exception as e:
-                log(f"[LLM] json parse fail: {str(e)[:120]}")
+                # 解析失败：把非法输出回喂 LLM 修复一次
+                log(f"[LLM] json parse fail({len(content)}字): {str(e)[:80]}")
+                fixed = fix_json_content(content, prompt)
+                if fixed is not None:
+                    return fixed
+                log(f"[LLM] fix fail content_head: {content[:120]!r}")
                 return None
         except Exception as e:
             log(f"[LLM] attempt {attempt+1} error: {str(e)[:120]}")
             if attempt == retries:
                 return None
     return None
+
+
+def fix_json_content(content, orig_prompt):
+    """把非法的 LLM 输出回喂模型，要求只输出合法 JSON。"""
+    if not LLM_API_KEY or not LLM_API_BASE or not LLM_MODEL:
+        return None
+    headers = {"Authorization": f"Bearer {LLM_API_KEY}", "Content-Type": "application/json"}
+    fix_prompt = (
+        "你上一次的输出不是合法 JSON（可能漏转义引号或截断）。请只输出修复后的合法 JSON 对象，",
+        "字符串值中的双引号一律转义。不要解释。\n\n原始要求摘要:\n" + orig_prompt[:800] +
+        "\n\n你的非法输出:\n" + content[:4000]
+    )
+    payload = {
+        "model": LLM_MODEL,
+        "messages": [{"role": "user", "content": fix_prompt}],
+        "temperature": 0.1,
+        "max_tokens": 8192,
+        "response_format": {"type": "json_object"},
+    }
+    try:
+        r = requests.post(f"{LLM_API_BASE}/chat/completions", headers=headers, json=payload, timeout=120)
+        if r.status_code != 200:
+            log(f"[LLM-fix] HTTP {r.status_code}")
+            return None
+        data = r.json()
+        c = data["choices"][0]["message"]["content"]
+        c = re.sub(r"```(?:json)?\s*|\s*```", "", c).strip()
+        try:
+            return json.loads(c)
+        except Exception:
+            try:
+                obj, _ = json.JSONDecoder().raw_decode(c, c.find("{"))
+                return obj
+            except Exception:
+                return None
+    except Exception as e:
+        log(f"[LLM-fix] error: {str(e)[:100]}")
+        return None
 
 
 def format_case_ts(rec):
