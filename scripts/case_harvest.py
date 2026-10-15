@@ -38,7 +38,7 @@ TZ_CST = timezone(timedelta(hours=8))
 SEARCH_KW_ZH = ["AI创业失败", "AI公司倒闭", "AI产品关停", "创业失败复盘", "独立开发者 失败", "AI创业 关停"]
 SEARCH_KW_EN = ["AI startup shutdown", "startup postmortem", "AI company closed", "indie hacker abandoned", "startup failure story"]
 HN_QUERIES = ["startup shutdown", "startup postmortem", "indie hacker failed", "AI product shutdown", "startup failed founders"]
-RELEVANCE_KW = ["失败", "倒闭", "关停", "关闭", "停止运营", "注销", "放弃", "解散", "破产", "shutdown", "closed", "shut down", "failed", "failure", "postmortem", "sunset", "discontinued", "abandoned", "laid off", "停止", "亏损", "烧光"]
+RELEVANCE_KW = ["失败", "倒闭", "关停", "关闭", "停止运营", "注销", "放弃", "解散", "破产", "shutdown", "closed", "shut down", "failed", "failure", "postmortem", "sunset", "discontinued", "abandoned", "laid off", "停止", "亏损", "烧光", "停服", "下线", "退市", "裁员", "终止", "关服", "暂停", "restructure", "wind down", "shutting down", "cease", "defunct"]
 
 LLM_API_KEY = os.environ.get("LLM_API_KEY", "")
 LLM_API_BASE = os.environ.get("LLM_API_BASE", "").rstrip("/")
@@ -240,27 +240,38 @@ def search_all(since_days):
     pools = {"gnews": [], "hn": [], "cn": []}
     seen = set()
 
-    def add(pool, it):
+    def add_dedup(pool, it):
         u = norm_url(it.get("url", ""))
-        if u and u not in seen and is_relevant(it.get("title", ""), it.get("snippet", "")):
+        if u and u not in seen:
             seen.add(u)
             pool.append(it)
 
-    # 1) Google News RSS（中英文关键词，每词限量防霸榜）
+    # 1) Google News RSS（中英文关键词，搜索词已保证相关，只去重，每词前 3 条防霸榜）
     for q in SEARCH_KW_ZH + SEARCH_KW_EN:
-        for it in google_news_search(q, tw, since_days)[:4]:
-            add(pools["gnews"], it)
+        qn = 0
+        for it in google_news_search(q, tw, since_days):
+            if qn >= 3:
+                break
+            add_dedup(pools["gnews"], it)
+            qn += 1
         time.sleep(1.0)
 
-    # 2) Hacker News（宽泛英文词，社区复盘内容多）
+    # 2) Hacker News（查询词相关，只去重，每词前 6 条）
     for q in HN_QUERIES:
-        for it in hn_search(q, since_days)[:6]:
-            add(pools["hn"], it)
+        qn = 0
+        for it in hn_search(q, since_days):
+            if qn >= 6:
+                break
+            add_dedup(pools["hn"], it)
+            qn += 1
         time.sleep(1.0)
 
-    # 3) 中文媒体 RSS 直抓
+    # 3) 中文媒体 RSS（全量 feed，需按关键词过滤）
     for it in cn_media_search(since_days):
-        add(pools["cn"], it)
+        u = norm_url(it.get("url", ""))
+        if u and u not in seen and is_relevant(it.get("title", ""), it.get("snippet", "")):
+            seen.add(u)
+            pools["cn"].append(it)
 
     # 三源交错合并，避免 fetch 阶段只取到单一来源
     cands = []
@@ -282,30 +293,36 @@ BROWSER_UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
 
 def fetch_page(url, timeout=25):
     """抓取网页正文。Google News 跳转链接会自动跟随到原文。"""
-    try:
-        headers = {
-            "User-Agent": BROWSER_UA,
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            "Accept-Language": "en-US,en;q=0.9,zh-CN;q=0.8",
-        }
-        r = requests.get(url, headers=headers, timeout=timeout, allow_redirects=True)
-        if r.status_code != 200:
-            log(f"[fetch] {url[:70]} HTTP {r.status_code}")
+    headers = {
+        "User-Agent": BROWSER_UA,
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9,zh-CN;q=0.8",
+    }
+    for attempt in range(2):
+        try:
+            r = requests.get(url, headers=headers, timeout=timeout, allow_redirects=True)
+            if r.status_code != 200:
+                log(f"[fetch] {url[:70]} HTTP {r.status_code}")
+                return None
+            final_url = r.url
+            ct = r.headers.get("Content-Type", "")
+            if "html" not in ct and "text" not in ct and "json" not in ct:
+                log(f"[fetch] {url[:70]} CT={ct[:40]}")
+                return None
+            soup = BeautifulSoup(r.text, "html.parser")
+            for t in soup(["script", "style", "nav", "footer", "header", "aside", "noscript"]):
+                t.decompose()
+            text = soup.get_text("\n", strip=True)
+            text = re.sub(r"\n{3,}", "\n\n", text)
+            if len(text) < 200 and attempt == 0 and "news.google.com" in url:
+                # GNews 跳转页可能是 JS 壳，换无 referer 方式重试一次
+                time.sleep(1.0)
+                continue
+            return text, final_url
+        except Exception as e:
+            log(f"[fetch] {url[:60]}: {e}")
             return None
-        final_url = r.url
-        ct = r.headers.get("Content-Type", "")
-        if "html" not in ct and "text" not in ct and "json" not in ct:
-            log(f"[fetch] {url[:70]} CT={ct[:40]}")
-            return None
-        soup = BeautifulSoup(r.text, "html.parser")
-        for t in soup(["script", "style", "nav", "footer", "header", "aside", "noscript"]):
-            t.decompose()
-        text = soup.get_text("\n", strip=True)
-        text = re.sub(r"\n{3,}", "\n\n", text)
-        return text, final_url
-    except Exception as e:
-        log(f"[fetch] {url[:60]}: {e}")
-        return None
+    return None
 
 
 def fetch_all(cands, n=20):
@@ -314,6 +331,8 @@ def fetch_all(cands, n=20):
         res = fetch_page(it["url"])
         if res and len(res[0]) > 200:
             ok.append({"item": it, "content": res[0], "final_url": res[1]})
+        elif res:
+            log(f"[fetch] {it['url'][:60]} 正文过短({len(res[0])}字), final={res[1][:60]}")
         time.sleep(0.5)
     log(f"[fetch] {len(ok)} 有效 / {len(cands[:n])} 尝试")
     return ok
