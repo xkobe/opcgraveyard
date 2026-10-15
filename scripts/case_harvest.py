@@ -14,6 +14,7 @@ OPC Case Harvest (GitHub Actions 版) — 一人公司坟场 AI OPC 失败案例
   默认: max_cases=10, since_days=7
 """
 
+import base64
 import json
 import os
 import re
@@ -37,7 +38,7 @@ TZ_CST = timezone(timedelta(hours=8))
 
 SEARCH_KW_ZH = ["AI创业失败", "AI公司倒闭", "AI产品关停", "创业失败复盘", "独立开发者 失败", "AI创业 关停"]
 SEARCH_KW_EN = ["AI startup shutdown", "startup postmortem", "AI company closed", "indie hacker abandoned", "startup failure story"]
-HN_QUERIES = ["we failed our startup", "shutting down my company", "why we shut down", "startup postmortem", "our startup died", "lessons from shutting down", "we closed our startup", "startup failure story", "indie hacker failed", "I shut down my startup"]
+HN_QUERIES = ["we failed our startup", "shutting down my company", "why we shut down", "startup postmortem", "our startup died", "lessons from shutting down", "we closed our startup", "startup failure story", "indie hacker failed", "I shut down my startup", "we killed our startup", "shutting down the company", "failed startup lessons", "company winding down", "product shutdown postmortem"]
 RELEVANCE_KW = ["失败", "倒闭", "关停", "关闭", "停止运营", "注销", "放弃", "解散", "破产", "shutdown", "closed", "shut down", "failed", "failure", "postmortem", "sunset", "discontinued", "abandoned", "laid off", "停止", "亏损", "烧光", "停服", "下线", "退市", "裁员", "终止", "关服", "暂停", "restructure", "wind down", "shutting down", "cease", "defunct"]
 
 LLM_API_KEY = os.environ.get("LLM_API_KEY", "")
@@ -140,15 +141,19 @@ def parse_rss_items(text):
             if ct == "title":
                 title = "".join(child.itertext()).strip()
             elif ct in ("description", "summary", "content"):
-                # itertext 兼容 CDATA 内嵌套 HTML，取纯文本摘要
-                snippet = "".join(child.itertext()).strip()
-                snippet = re.sub(r"<[^>]+>", "", snippet)[:500]
+                # itertext 兼容 CDATA 内嵌套 HTML；先抓原文 href，再取纯文本摘要
+                raw = "".join(child.itertext()).strip()
+                hrefs = re.findall(r'href="(https?://[^"]+)"', raw)
+                if hrefs:
+                    real_url = hrefs[0]
+                snippet = re.sub(r"<[^>]+>", "", raw)[:500]
             elif ct == "link":
                 url = "".join(child.itertext()).strip() or child.get("href") or ""
             elif ct in ("pubDate", "published", "updated"):
                 published = "".join(child.itertext()).strip()
         if title and url:
-            items.append({"title": title, "snippet": snippet, "url": url.strip(), "published": published})
+            items.append({"title": title, "snippet": snippet, "url": url.strip(),
+                          "real_url": real_url, "published": published})
     return items
 
 
@@ -172,14 +177,19 @@ def google_news_search(query, tw, days):
             log(f"[GNews] not RSS: {ct}")
             return []
         items = parse_rss_items(r.text)
-        # Google News 的 link 是加密跳转链接（Actions 里 fetch 不到正文），
-        # 但 RSS 自带 description 摘要，可作兜底正文
+        # Google News 的 link 是加密跳转链接，但 description 里常带真实 href 可抓原文；
+        # 摘要足够时仍作为 body 兜底
         with_body = 0
+        with_real = 0
         for it in items:
+            rurl = it.get("real_url", "")
+            if rurl and "news.google.com" not in rurl:
+                it["url"] = rurl
+                with_real += 1
             if it.get("snippet") and len(it["snippet"]) > 60:
                 it["body"] = it["snippet"]
                 with_body += 1
-        log(f"[GNews] {len(items)} items ({with_body} with body) for {query[:30]}")
+        log(f"[GNews] {len(items)} items ({with_body} body, {with_real} real_url) for {query[:30]}")
         return items
     except Exception as e:
         log(f"[GNews] error {query[:30]}: {e}")
@@ -317,8 +327,28 @@ def search_all(since_days):
 BROWSER_UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
               "(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36")
 
+def gnews_decode(u):
+    """解码 news.google.com/rss/articles/CBMi... 跳转链接，提取真实 URL。"""
+    m = re.search(r"/articles/([A-Za-z0-9_-]+)", u)
+    if not m:
+        return None
+    b = m.group(1)
+    try:
+        raw = base64.urlsafe_b64decode(b + "=" * (-len(b) % 4))
+        for cand in re.findall(rb"https?://[^\x00-\x20\x7f]+", raw):
+            s = cand.decode(errors="ignore").rstrip(".,;)\"'>")
+            if "news.google.com" not in s and "google.com" not in s:
+                return s
+    except Exception:
+        pass
+    return None
+
+
 def fetch_page(url, timeout=25):
-    """抓取网页正文。Google News 跳转链接会自动跟随到原文。"""
+    """抓取网页正文。Google News 跳转链接先 base64 解码取真实 URL，解码失败则跟随跳转。"""
+    dec = gnews_decode(url)
+    if dec:
+        url = dec
     headers = {
         "User-Agent": BROWSER_UA,
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -353,21 +383,30 @@ def fetch_page(url, timeout=25):
 
 def fetch_all(cands, n=20):
     ok = []
-    for it in cands[:n]:
-        # 自带正文（HN 复盘帖 / GNews 摘要）优先，无需外部抓取
+    remain = []
+    # 第一轮：自带正文（HN 复盘帖 / GNews 摘要）直接使用，不占抓取名额
+    for it in cands:
         body = it.get("body") or ""
         min_body = 120 if it.get("is_selfpost") else 60
         if body and len(body) > min_body:
             ok.append({"item": it, "content": body, "final_url": it.get("url", ""), "source": "body"})
+        else:
+            remain.append(it)
+    # 第二轮：剩余候选抓取原文；GNews 加密跳转链接跳过（抓不到正文，不浪费名额）
+    for it in remain:
+        if len(ok) >= n:
+            break
+        u = it.get("url", "")
+        if "news.google.com/rss/articles" in u:
+            log(f"[fetch] 跳过GNews跳转: {u[:60]}")
             continue
-        res = fetch_page(it["url"])
+        res = fetch_page(u)
         if res and len(res[0]) > 200:
             ok.append({"item": it, "content": res[0], "final_url": res[1], "source": "fetch"})
         elif res:
-            log(f"[fetch] {it['url'][:60]} 正文过短({len(res[0])}字), final={res[1][:60]}")
+            log(f"[fetch] {u[:60]} 正文过短({len(res[0])}字), final={res[1][:60]}")
         time.sleep(0.5)
-    log(f"[fetch] {len(ok)} 有效 / {len(cands[:n])} 尝试")
-    return ok
+    log(f"[fetch] {len(ok)} 有效 / {n} 上限")
     return ok
 
 
@@ -400,6 +439,7 @@ def call_llm(prompt, retries=1):
         "model": LLM_MODEL,
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.2,
+        "max_tokens": 8192,
         "response_format": {"type": "json_object"},
     }
     for attempt in range(retries + 1):
@@ -412,11 +452,27 @@ def call_llm(prompt, retries=1):
             content = data["choices"][0]["message"]["content"]
             # 清理可能的 markdown code fence
             content = re.sub(r"```(?:json)?\s*|\s*```", "", content).strip()
+            # 1) 整段就是 JSON
+            try:
+                return json.loads(content)
+            except Exception:
+                pass
+            # 2) 提取第一个完整 JSON 对象
+            try:
+                obj, _ = json.JSONDecoder().raw_decode(content, content.find("{"))
+                return obj
+            except Exception:
+                pass
+            # 3) 贪婪提取最后兜底
             m = re.search(r'\{.*\}', content, re.DOTALL)
             if not m:
                 log("[LLM] no JSON in response")
                 return None
-            return json.loads(m.group())
+            try:
+                return json.loads(m.group())
+            except Exception as e:
+                log(f"[LLM] json parse fail: {str(e)[:120]}")
+                return None
         except Exception as e:
             log(f"[LLM] attempt {attempt+1} error: {str(e)[:120]}")
             if attempt == retries:
