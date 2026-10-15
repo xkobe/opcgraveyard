@@ -174,10 +174,12 @@ def google_news_search(query, tw, days):
         items = parse_rss_items(r.text)
         # Google News 的 link 是加密跳转链接（Actions 里 fetch 不到正文），
         # 但 RSS 自带 description 摘要，可作兜底正文
+        with_body = 0
         for it in items:
             if it.get("snippet") and len(it["snippet"]) > 60:
                 it["body"] = it["snippet"]
-        log(f"[GNews] {len(items)} items for {query[:30]}")
+                with_body += 1
+        log(f"[GNews] {len(items)} items ({with_body} with body) for {query[:30]}")
         return items
     except Exception as e:
         log(f"[GNews] error {query[:30]}: {e}")
