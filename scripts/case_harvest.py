@@ -37,7 +37,7 @@ TZ_CST = timezone(timedelta(hours=8))
 
 SEARCH_KW_ZH = ["AI创业失败", "AI公司倒闭", "AI产品关停", "创业失败复盘", "独立开发者 失败", "AI创业 关停"]
 SEARCH_KW_EN = ["AI startup shutdown", "startup postmortem", "AI company closed", "indie hacker abandoned", "startup failure story"]
-HN_QUERIES = ["startup shutdown", "startup postmortem", "indie hacker failed", "AI product shutdown", "startup failed founders"]
+HN_QUERIES = ["we failed our startup", "shutting down my company", "why we shut down", "startup postmortem", "our startup died", "lessons from shutting down", "we closed our startup", "startup failure story", "indie hacker failed", "I shut down my startup"]
 RELEVANCE_KW = ["失败", "倒闭", "关停", "关闭", "停止运营", "注销", "放弃", "解散", "破产", "shutdown", "closed", "shut down", "failed", "failure", "postmortem", "sunset", "discontinued", "abandoned", "laid off", "停止", "亏损", "烧光", "停服", "下线", "退市", "裁员", "终止", "关服", "暂停", "restructure", "wind down", "shutting down", "cease", "defunct"]
 
 LLM_API_KEY = os.environ.get("LLM_API_KEY", "")
@@ -170,16 +170,24 @@ def google_news_search(query, tw, days):
             log(f"[GNews] not RSS: {ct}")
             return []
         items = parse_rss_items(r.text)
-        # Google News 的 link 是跳转 URL，保留原始 news.google.com 链接可 fetch 跟随到原文
+        # Google News 的 link 是加密跳转链接（Actions 里 fetch 不到正文），
+        # 但 RSS 自带 description 摘要，可作兜底正文
+        for it in items:
+            if it.get("snippet") and len(it["snippet"]) > 60:
+                it["body"] = it["snippet"]
         log(f"[GNews] {len(items)} items for {query[:30]}")
         return items
+    except Exception as e:
+        log(f"[GNews] error {query[:30]}: {e}")
+        return []
     except Exception as e:
         log(f"[GNews] error {query[:30]}: {e}")
         return []
 
 
 def hn_search(query, days):
-    """Hacker News Algolia API 搜索（稳定免费，英文创业社区）。宽窗口 60 天保证召回，靠 slug 去重。"""
+    """Hacker News Algolia API 搜索（稳定免费，英文创业社区）。宽窗口 60 天保证召回。
+    返回 item 自带 body（story_text，复盘帖正文通常很长，无需外部抓取）。"""
     ts = int((datetime.now(TZ_CST) - timedelta(days=max(days, 60))).timestamp())
     url = ("https://hn.algolia.com/api/v1/search?query=" + urllib.parse.quote(query) +
            f"&tags=story&hitsPerPage=20&numericFilters=created_at_i%3E{ts}")
@@ -192,8 +200,17 @@ def hn_search(query, days):
         out = []
         for h in d.get("hits", []):
             title = h.get("title") or h.get("story_title") or ""
+            st = (h.get("story_text") or "").strip()
             u = h.get("url") or h.get("story_url") or ""
-            if u:
+            # 清洗 story_text 里的 HTML
+            if st:
+                st = re.sub(r"<[^>]+>", " ", st)
+                st = re.sub(r"\s+", " ", st).strip()
+            if st and len(st) > 100:
+                out.append({"title": title, "snippet": st[:300],
+                            "url": u, "published": h.get("created_at", ""),
+                            "body": st, "is_selfpost": True})
+            elif u:
                 out.append({"title": title, "snippet": (h.get("story_text") or "")[:300],
                             "url": u, "published": h.get("created_at", "")})
         log(f"[HN] {len(out)} items for {query[:30]}")
@@ -226,8 +243,11 @@ def cn_media_search(days):
             items = parse_rss_items(r.text)
             log(f"[{name}] {len(items)} items")
             for it in items:
+                # RSS description 摘要可作兜底正文；标题含失败词才保留
                 if is_relevant(it["title"], it["snippet"]):
                     it["sourceName"] = name
+                    if it.get("snippet") and len(it["snippet"]) > 60:
+                        it["body"] = it["snippet"]
                     out.append(it)
         except Exception as e:
             log(f"[{name}] error: {e}")
@@ -328,13 +348,20 @@ def fetch_page(url, timeout=25):
 def fetch_all(cands, n=20):
     ok = []
     for it in cands[:n]:
+        # 自带正文（HN 复盘帖 / GNews 摘要）优先，无需外部抓取
+        body = it.get("body") or ""
+        min_body = 120 if it.get("is_selfpost") else 60
+        if body and len(body) > min_body:
+            ok.append({"item": it, "content": body, "final_url": it.get("url", ""), "source": "body"})
+            continue
         res = fetch_page(it["url"])
         if res and len(res[0]) > 200:
-            ok.append({"item": it, "content": res[0], "final_url": res[1]})
+            ok.append({"item": it, "content": res[0], "final_url": res[1], "source": "fetch"})
         elif res:
             log(f"[fetch] {it['url'][:60]} 正文过短({len(res[0])}字), final={res[1][:60]}")
         time.sleep(0.5)
     log(f"[fetch] {len(ok)} 有效 / {len(cands[:n])} 尝试")
+    return ok
     return ok
 
 
