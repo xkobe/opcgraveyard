@@ -36,9 +36,9 @@ VALID_STATUSES = ["dead", "acquired", "pivoted"]
 VALID_FUNDING_TYPES = ["自筹", "融资", "混合"]
 TZ_CST = timezone(timedelta(hours=8))
 
-SEARCH_KW_ZH = ["AI创业失败", "AI公司倒闭", "AI产品关停", "创业失败复盘", "独立开发者 失败", "AI创业 关停"]
-SEARCH_KW_EN = ["AI startup shutdown", "startup postmortem", "AI company closed", "indie hacker abandoned", "startup failure story"]
-HN_QUERIES = ["we failed our startup", "shutting down my company", "why we shut down", "startup postmortem", "our startup died", "lessons from shutting down", "we closed our startup", "startup failure story", "indie hacker failed", "I shut down my startup", "we killed our startup", "shutting down the company", "failed startup lessons", "company winding down", "product shutdown postmortem"]
+SEARCH_KW_ZH = ["AI创业失败", "AI公司倒闭", "AI产品关停", "创业失败复盘", "独立开发者 失败", "AI创业 关停", "创业公司倒闭", "科技公司关停", "APP停运", "产品下线", "AI应用关闭", "创业项目终止", "创业公司破产", "AI独角兽倒闭", "软件停止服务", "项目解散"]
+SEARCH_KW_EN = ["AI startup shutdown", "startup postmortem", "AI company closed", "indie hacker abandoned", "startup failure story", "AI startup dead", "startup shut down", "company shut down AI product", "startup sunset", "failed startup founder", "AI tool discontinued", "startup winding down", "indie software discontinued", "acquired startup closed", "startup bankruptcy 2026", "AI app shutdown"]
+HN_QUERIES = ["we failed our startup", "shutting down my company", "why we shut down", "startup postmortem", "our startup died", "lessons from shutting down", "we closed our startup", "startup failure story", "indie hacker failed", "I shut down my startup", "we killed our startup", "shutting down the company", "failed startup lessons", "company winding down", "product shutdown postmortem", "show HN we are shutting down", "acquihire shutdown", "killed our side project", "startup pivot failed", "we sold and shut down"]
 RELEVANCE_KW = ["失败", "倒闭", "关停", "关闭", "停止运营", "注销", "放弃", "解散", "破产", "shutdown", "closed", "shut down", "failed", "failure", "postmortem", "sunset", "discontinued", "abandoned", "laid off", "停止", "亏损", "烧光", "停服", "下线", "退市", "裁员", "终止", "关服", "暂停", "restructure", "wind down", "shutting down", "cease", "defunct"]
 
 LLM_API_KEY = os.environ.get("LLM_API_KEY", "")
@@ -767,7 +767,7 @@ def main():
         return 0
 
     log("[2/4] Fetch...")
-    fetched = fetch_all(cands, n=30)
+    fetched = fetch_all(cands, n=50)
     if not fetched:
         with open(rpath, "w", encoding="utf-8") as f:
             f.write(gen_report([], n0))
