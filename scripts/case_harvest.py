@@ -78,8 +78,9 @@ def read_existing():
 BLOCKED_SLUGS = {
     "wii-u", "koko-networks", "anthropic-claude-code",
     "anthropic-claude-2-1-shutdown", "deepseek-founder-dispute",
+    "gemini-api-key-theft-startup",
 }
-BLOCKED_KEYWORDS = ["claude-code", "claude2", "wiiu", "kokonetworks", "deepseek"]
+BLOCKED_KEYWORDS = ["claude-code", "claude2", "wiiu", "kokonetworks", "deepseek", "gemini-api-key-theft"]
 
 
 def is_blocked(slug, name, source):
