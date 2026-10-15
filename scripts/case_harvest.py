@@ -396,9 +396,15 @@ def fetch_all(cands, n=20):
         else:
             remain.append(it)
     # 第二轮：剩余候选抓取原文；GNews 加密跳转链接跳过（抓不到正文，不浪费名额）
+    diag_gnews = 0
     for it in remain:
         if len(ok) >= n:
-            break
+            # 名额已满：仅对前几条 GNews 候选做 decode 诊断（验证解码成功率，不占用名额）
+            if diag_gnews < 5 and "news.google.com/rss/articles" in it.get("url", ""):
+                diag_gnews += 1
+                dec = gnews_decode(it["url"])
+                log(f"[diag] GNews decode: {'OK '+dec[:60] if dec else 'FAIL'} url={it['url'][:70]}")
+            continue
         u = it.get("url", "")
         if "news.google.com/rss/articles" in u:
             dec = gnews_decode(u)
@@ -433,6 +439,8 @@ EXTRACT_PROMPT = """你是创业失败案例研究员。阅读文章,提取 1 �
 - 只提取真实案例。若无, slug 返回空字符串。
 - 所有字段基于文章事实, 不编造。多个案例取最详细的 1 个。
 - JSON 字符串值中所有双引号必须转义为 \"，禁止输出未转义的双引号。
+- timelineJson/breakdownJson/lessonsJson 必须是真实 JSON 数组（不是字符串）。timelineJson 每项是 {"date": "...", "event": "..."} 对象；breakdownJson 每项是 {"factor": "...", "weight": ...} 对象；lessonsJson 每项是字符串。示例: "timelineJson":[{"date":"2024-01","event":"成立"}]
+- 输出必须是一个完整的 JSON 对象，不要截断。
 - slug: 全小写英文短横线
 - deadCause 必须六选一: 获客失败, 需求验证缺失, 商业模式脆弱, 成本结构失衡, 同质化竞争, 合规与决策风险
 - epitaph: 2-3行墓志铭含关键数字
@@ -512,7 +520,7 @@ def fix_json_content(content, orig_prompt):
         return None
     headers = {"Authorization": f"Bearer {LLM_API_KEY}", "Content-Type": "application/json"}
     fix_prompt = (
-        "你上一次的输出不是合法 JSON（可能漏转义引号或截断）。请只输出修复后的合法 JSON 对象，",
+        "你上一次的输出不是合法 JSON（可能漏转义引号或截断）。请只输出修复后的合法 JSON 对象，"
         "字符串值中的双引号一律转义。不要解释。\n\n原始要求摘要:\n" + orig_prompt[:800] +
         "\n\n你的非法输出:\n" + content[:4000]
     )
