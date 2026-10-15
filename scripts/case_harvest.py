@@ -136,6 +136,7 @@ def parse_rss_items(text):
         if tag not in ("item", "entry"):
             continue
         title = snippet = url = published = ""
+        real_url = ""
         for child in item:
             ct = child.tag.rsplit("}", 1)[-1]
             if ct == "title":
@@ -407,20 +408,11 @@ def fetch_all(cands, n=20):
             continue
         u = it.get("url", "")
         if "news.google.com/rss/articles" in u:
-            dec = gnews_decode(u)
-            if dec:
-                log(f"[fetch] GNews解码成功: {dec[:70]}")
-                res = fetch_page(dec)
-                if res and len(res[0]) > 200:
-                    ok.append({"item": it, "content": res[0], "final_url": res[1], "source": "fetch"})
-                    time.sleep(0.5)
-                    continue
-                log(f"[fetch] GNews解码后抓取失败, 摘要兜底")
             body = it.get("body") or it.get("snippet") or ""
             if len(body) > 60:
                 ok.append({"item": it, "content": body, "final_url": u, "source": "body"})
             else:
-                log(f"[fetch] 跳过GNews(解码失败且无摘要): {u[:60]}")
+                log(f"[fetch] 跳过GNews(无摘要): {u[:60]}")
             time.sleep(0.5)
             continue
         res = fetch_page(u)
@@ -440,7 +432,7 @@ EXTRACT_PROMPT = """你是创业失败案例研究员。阅读文章,提取 1 �
 - 所有字段基于文章事实, 不编造。多个案例取最详细的 1 个。
 - JSON 字符串值中所有双引号必须转义为 \"，禁止输出未转义的双引号。
 - timelineJson/breakdownJson/lessonsJson 必须是真实 JSON 数组（不是字符串）。timelineJson 每项是 {"date": "...", "event": "..."} 对象；breakdownJson 每项是 {"factor": "...", "weight": ...} 对象；lessonsJson 每项是字符串。示例: "timelineJson":[{"date":"2024-01","event":"成立"}]
-- 输出必须是一个完整的 JSON 对象，不要截断。
+- 输出必须是一个完整的 JSON 对象，不要截断。示例: "timelineJson":[{{"date":"2024-01","event":"成立"}}]
 - slug: 全小写英文短横线
 - deadCause 必须六选一: 获客失败, 需求验证缺失, 商业模式脆弱, 成本结构失衡, 同质化竞争, 合规与决策风险
 - epitaph: 2-3行墓志铭含关键数字
