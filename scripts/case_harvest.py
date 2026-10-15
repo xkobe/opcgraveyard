@@ -592,11 +592,18 @@ def format_case_ts(rec):
 
 
 def merge_cases(content, new_cases):
-    idx = content.rfind("];")
+    # 以 getCaseBySlug 为锚点，向前找最近的 "];"（即 CASES 数组结尾），
+    # 不能用裸 rfind("];")：若数组结尾缺失，会误匹配 interface 里
+    # `lessons: string[];` 的 "];"，把新案例插进类型定义、破坏文件结构。
+    marker = "export function getCaseBySlug"
+    idx = content.find(marker)
     if idx == -1:
-        raise ValueError("Cannot find ];")
-    after = content[idx:]
-    before = content[:idx].rstrip()
+        raise ValueError("getCaseBySlug not found")
+    end = content.rfind("];", 0, idx)
+    if end == -1:
+        raise ValueError("CASES array end not found")
+    after = content[end:]
+    before = content[:end].rstrip()
     if not before.endswith(","):
         before += ","
     fmt = ",\n".join(format_case_ts(c) for c in new_cases)
