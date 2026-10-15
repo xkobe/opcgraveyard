@@ -237,44 +237,65 @@ def cn_media_search(days):
 
 def search_all(since_days):
     tw = build_tw(since_days)
-    cands, seen = [], set()
+    pools = {"gnews": [], "hn": [], "cn": []}
+    seen = set()
 
-    def add(it):
+    def add(pool, it):
         u = norm_url(it.get("url", ""))
         if u and u not in seen and is_relevant(it.get("title", ""), it.get("snippet", "")):
             seen.add(u)
-            cands.append(it)
+            pool.append(it)
 
-    # 1) Google News RSS（中英文关键词）
+    # 1) Google News RSS（中英文关键词，每词限量防霸榜）
     for q in SEARCH_KW_ZH + SEARCH_KW_EN:
-        for it in google_news_search(q, tw, since_days):
-            add(it)
+        for it in google_news_search(q, tw, since_days)[:4]:
+            add(pools["gnews"], it)
         time.sleep(1.0)
 
     # 2) Hacker News（宽泛英文词，社区复盘内容多）
     for q in HN_QUERIES:
-        for it in hn_search(q, since_days):
-            add(it)
+        for it in hn_search(q, since_days)[:6]:
+            add(pools["hn"], it)
         time.sleep(1.0)
 
     # 3) 中文媒体 RSS 直抓
     for it in cn_media_search(since_days):
-        add(it)
+        add(pools["cn"], it)
 
-    log(f"[搜索] {len(cands)} 候选")
+    # 三源交错合并，避免 fetch 阶段只取到单一来源
+    cands = []
+    i = j = k = 0
+    while i < len(pools["gnews"]) or j < len(pools["hn"]) or k < len(pools["cn"]):
+        if i < len(pools["gnews"]):
+            cands.append(pools["gnews"][i]); i += 1
+        if j < len(pools["hn"]):
+            cands.append(pools["hn"][j]); j += 1
+        if k < len(pools["cn"]):
+            cands.append(pools["cn"][k]); k += 1
+
+    log(f"[搜索] 候选: GNews={len(pools['gnews'])} HN={len(pools['hn'])} CN={len(pools['cn'])} 合计={len(cands)}")
     return cands
 
+
+BROWSER_UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+              "(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36")
 
 def fetch_page(url, timeout=25):
     """抓取网页正文。Google News 跳转链接会自动跟随到原文。"""
     try:
-        r = requests.get(url, headers={"User-Agent": UA}, timeout=timeout, allow_redirects=True)
+        headers = {
+            "User-Agent": BROWSER_UA,
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.9,zh-CN;q=0.8",
+        }
+        r = requests.get(url, headers=headers, timeout=timeout, allow_redirects=True)
         if r.status_code != 200:
+            log(f"[fetch] {url[:70]} HTTP {r.status_code}")
             return None
-        # 跟随后的最终 URL（Google News 原文）
         final_url = r.url
         ct = r.headers.get("Content-Type", "")
         if "html" not in ct and "text" not in ct and "json" not in ct:
+            log(f"[fetch] {url[:70]} CT={ct[:40]}")
             return None
         soup = BeautifulSoup(r.text, "html.parser")
         for t in soup(["script", "style", "nav", "footer", "header", "aside", "noscript"]):
@@ -287,14 +308,14 @@ def fetch_page(url, timeout=25):
         return None
 
 
-def fetch_all(cands, n=8):
+def fetch_all(cands, n=20):
     ok = []
     for it in cands[:n]:
         res = fetch_page(it["url"])
         if res and len(res[0]) > 200:
             ok.append({"item": it, "content": res[0], "final_url": res[1]})
-        time.sleep(0.6)
-    log(f"[fetch] {len(ok)} 有效")
+        time.sleep(0.5)
+    log(f"[fetch] {len(ok)} 有效 / {len(cands[:n])} 尝试")
     return ok
 
 
@@ -505,7 +526,7 @@ def main():
         return 0
 
     log("[2/4] Fetch...")
-    fetched = fetch_all(cands, n=12)
+    fetched = fetch_all(cands, n=20)
     if not fetched:
         with open(rpath, "w", encoding="utf-8") as f:
             f.write(gen_report([], n0))
