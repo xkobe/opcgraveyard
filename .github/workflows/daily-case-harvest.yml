@@ -1,0 +1,64 @@
+name: daily-case-harvest
+
+on:
+  schedule:
+    # 每天 06:00 UTC = 14:00 北京时间，自动采集入库
+    - cron: '0 6 * * *'
+  workflow_dispatch: {}  # 支持手动触发
+
+permissions:
+  contents: write
+
+jobs:
+  harvest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Run case harvest
+        env:
+          SEARCH_API_KEY: ${{ secrets.SEARCH_API_KEY }}
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          LLM_API_BASE: ${{ secrets.LLM_API_BASE }}
+          LLM_MODEL: ${{ secrets.LLM_MODEL }}
+        run: python scripts/case_harvest.py --max 10 --since-days 30
+
+      - name: Verify cases file
+        run: |
+          python - <<'EOF'
+          import re
+          src = open('src/data/cases.ts', encoding='utf-8').read()
+          slugs = re.findall(r'slug: "([a-z0-9-]+)"', src)
+          slugs = [s for s in slugs if s != 'string']
+          print(f'total cases: {len(slugs)}')
+          assert len(set(slugs)) == len(slugs), 'duplicate slug found'
+          EOF
+
+      - name: Commit changes
+        run: |
+          git config user.name "opc-harvest-bot"
+          git config user.email "opc-harvest-bot@users.noreply.github.com"
+          git add src/data/cases.ts docs/ codeact/output/
+          if git diff --cached --quiet; then
+            echo "no changes"
+          else
+            git commit -m "chore: daily case harvest $(date +%F)"
+            git push
+          fi
+
+      - name: Upload harvest report
+        uses: actions/upload-artifact@v4
+        with:
+          name: opc-cases-report
+          path: codeact/output/opc_cases_*.md
+          if-no-files-found: ignore
