@@ -2567,6 +2567,43 @@ export const CASES: CaseRecord[] = [
       "融资节奏要留出应对范式变化的缓冲，不能把估值建立在旧技术假设上",
       "创业公司要持续追问：如果明天出现一个更强更便宜的通用模型，我的产品还剩下什么",
     ],
+  },
+  {
+    slug: "apicatcher",
+    name: "ApiCatcher",
+    founderBg: "独立开发者",
+    region: "中国",
+    industry: "开发者工具 / HTTPS 抓包与调试",
+    startedAt: "2024",
+    closedAt: "2025",
+    investment: "未披露（个人自筹）",
+    source: "80aj.com",
+    status: "dead",
+    lifespanMonths: 6,
+    fundingType: "自筹",
+    deadCause: "同质化竞争",
+    deadCauseSub: "独立开发者半年打磨的 HTTPS 抓包工具，正面对标 Proxyman 等成熟商业产品，功能与生态难以形成差异化，缺乏付费转化与用户增长",
+    verified: false,
+    epitaph: "半年打磨一款抓包工具，\n对面站着 Proxyman 和整个成熟生态，\nAI 生成正则救不了没有护城河的产品。",
+    motivation: "开发者看到 HTTPS 抓包调试工具长期被 Proxyman 等少数商业软件占据，价格不低、体验仍有改进空间，于是决定以独立开发者身份切入，用半年时间打磨一款自带 AI 能力的抓包工具 ApiCatcher，希望借助 AI 自动生成脚本与正则表达式降低调试门槛，吸引个人开发者与小团队付费使用。",
+    timeline: [
+      { time: "", event: "独立开发者启动 ApiCatcher 项目，定位 HTTPS 抓包与调试工具" },
+      { time: "", event: "投入约半年时间打磨产品，加入 AI 生成脚本与正则表达式功能" },
+      { time: "", event: "产品对标 Proxyman 等成熟商业工具，未能形成有效差异化与用户增长" },
+      { time: "", event: "项目停止推进，未获得可持续的付费用户" },
+    ],
+    breakdown: [
+      { layer: "表层原因", detail: "抓包调试工具赛道已被 Proxyman、Charles 等成熟产品占据，用户迁移成本高，新产品难以撬动存量用户" },
+      { layer: "深层原因", detail: "AI 生成脚本与正则属于锦上添花的功能，不构成核心壁垒，无法支撑用户从成熟工具迁移" },
+      { layer: "商业模式", detail: "独立开发者缺乏分发渠道与品牌信任，付费转化路径不清晰，半年投入难以换来收入验证" },
+      { layer: "资源约束", detail: "单人开发在文档、生态集成、跨平台稳定性上难以与商业团队长期竞争" },
+    ],
+    lessons: [
+      "在成熟商业工具主导的赛道里，单点 AI 功能不足以构成差异化护城河",
+      "独立开发者应先用最小成本验证付费意愿，再投入半年做完整产品",
+      "对标成熟产品时要明确回答：用户为什么要迁移，而不是只做得更便宜或更 AI",
+      "开发者工具的壁垒在生态与稳定性，而非功能清单的长度",
+    ],
   }
 ];
 export function getCaseBySlug(slug: string): CaseRecord | undefined {
