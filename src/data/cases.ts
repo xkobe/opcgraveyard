@@ -2604,6 +2604,41 @@ export const CASES: CaseRecord[] = [
       "对标成熟产品时要明确回答：用户为什么要迁移，而不是只做得更便宜或更 AI",
       "开发者工具的壁垒在生态与稳定性，而非功能清单的长度",
     ],
+  },
+  {
+    slug: "mit-dropout-two-startups-shutdown",
+    name: "MIT Dropout's Two Startups",
+    founderBg: "MIT 辍学生连续创业者",
+    region: "美国",
+    industry: "科技创业（多领域）",
+    startedAt: "",
+    closedAt: "",
+    investment: "",
+    source: "TheStreet",
+    status: "dead",
+    lifespanMonths: 0,
+    fundingType: "自筹",
+    deadCause: "需求验证缺失",
+    deadCauseSub: "两家创业公司数周内相继关停，产品未验证真实需求",
+    verified: false,
+    epitaph: "MIT 辍学生的两家公司，数周内相继关停；连续创业的代价，是两次未验证的需求。",
+    motivation: "一位 MIT 辍学生带着对技术创业的信念连续创办了两家公司，试图用工程能力快速切入市场。然而两家公司都未能在数周内相继宣布关停，说明其产品方向缺乏真实需求验证，创业热情未能转化为可持续的用户与收入。",
+    timeline: [
+      { time: "", event: "MIT 辍学生创办第一家公司" },
+      { time: "", event: "创办第二家公司" },
+      { time: "", event: "两家公司在数周内相继宣布关停" },
+    ],
+    breakdown: [
+      { layer: "表层原因", detail: "两家公司在数周内相继宣布关停，产品未能获得市场认可" },
+      { layer: "深层原因", detail: "需求验证缺失，创业方向未经过充分的市场检验" },
+      { layer: "结构性原因", detail: "连续创业者快速切换方向，资源与精力分散，难以形成可持续商业模式" },
+    ],
+    lessons: [
+      "连续创业不等于连续成功，需求验证应先于产品开发",
+      "两家公司数周内相继关停，说明方向选择存在系统性偏差",
+      "MIT 背景与技术能力不能替代市场验证",
+      "创业节奏过快、缺乏用户反馈闭环是致命风险",
+    ],
   }
 ];
 export function getCaseBySlug(slug: string): CaseRecord | undefined {
