@@ -21,10 +21,10 @@ export default async function CasesPage({
     }),
   );
   const causes = DEATH_CAUSES.filter((d) =>
-    CASES.some((c) => c.deadCause === d.value),
+    CASES.some((c) => c.primaryTag === d.value),
   ).map((d) => ({
     value: d.value,
-    count: CASES.filter((c) => c.deadCause === d.value).length,
+    count: CASES.filter((c) => c.primaryTag === d.value).length,
   }));
   const regions = [...new Set(CASES.map((c) => c.region))].map((value) => ({
     value,

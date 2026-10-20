@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function Home() {
   // 最新下葬：按 closedAt 倒序取最近 5 条，保证新增案例自动进入榜单
   const latest = [...CASES]
-    .sort((a, b) => (b.closedAt || '').localeCompare(a.closedAt || ''))
+    .sort((a, b) => (b.closedYear || '').localeCompare(a.closedYear || ''))
     .slice(0, 5);
   const total = CASES.length;
   const verifiedCount = CASES.filter((c) => c.verified).length;
@@ -25,7 +25,7 @@ export default function Home() {
       : 0;
   const causeStats = DEATH_CAUSES.map((cause) => ({
     cause,
-    count: CASES.filter((c) => c.deadCause === cause.value).length,
+    count: CASES.filter((c) => c.primaryTag === cause.value).length,
   })).sort((a, b) => b.count - a.count);
 
   return (

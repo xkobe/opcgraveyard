@@ -17,7 +17,7 @@ export async function generateMetadata({
   const caseItem = getCaseBySlug(slug);
   if (!caseItem) return { title: '墓碑不存在' };
   return {
-    title: `${caseItem.name}：${caseItem.deadCause} | 死亡档案`,
+    title: `${caseItem.name}：${caseItem.primaryTag} | 死亡档案`,
     description: `${caseItem.epitaph.slice(0, 100)}…`,
   };
 }
@@ -31,9 +31,9 @@ export default async function CaseDetailPage({
   const caseItem = getCaseBySlug(slug);
   if (!caseItem) notFound();
 
-  const cause = getCauseMeta(caseItem.deadCause);
+  const cause = getCauseMeta(caseItem.primaryTag);
   const related = CASES.filter(
-    (c) => c.slug !== caseItem.slug && c.deadCause === caseItem.deadCause,
+    (c) => c.slug !== caseItem.slug && c.primaryTag === caseItem.primaryTag,
   ).slice(0, 3);
 
   return (
@@ -57,9 +57,14 @@ export default async function CaseDetailPage({
               {cause.value}
             </span>
           )}
-          <span className="rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-1 text-xs text-zinc-600">
-            {caseItem.deadCauseSub}
-          </span>
+          {caseItem.secondaryTags.map((tag) => (
+            <span
+              key={tag}
+              className="rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-1 text-xs text-zinc-600"
+            >
+              {tag}
+            </span>
+          ))}
           <span
             className={cn(
               'rounded-full border px-2.5 py-1 text-xs',
@@ -90,12 +95,15 @@ export default async function CaseDetailPage({
             ['创始人背景', caseItem.founderBg],
             ['地区', caseItem.region],
             ['行业', caseItem.industry],
-            ['成立', caseItem.startedAt],
-            ['关闭', caseItem.closedAt],
+            ['商业模式', caseItem.businessModel || '待补全'],
+            ['成立', caseItem.foundedYear],
+            ['关闭', caseItem.closedYear],
             ['存活时长', `${caseItem.lifespanMonths} 个月`],
-            ['投入', caseItem.investment],
+            ['总融资额', caseItem.totalFunding],
+            ['融资轮次', caseItem.fundingRounds > 0 ? `${caseItem.fundingRounds} 轮` : '待补全'],
+            ['最后阶段', caseItem.lastStage || '待补全'],
             ['资金类型', caseItem.fundingType],
-            ['死因细分', caseItem.deadCauseSub],
+            ['投资方', caseItem.investors.length > 0 ? caseItem.investors.join('、') : '待补全'],
           ].map(([label, value]) => (
             <div key={label} className="bg-white p-4">
               <dt className="text-[11px] font-medium uppercase tracking-wider text-zinc-500">
@@ -106,8 +114,16 @@ export default async function CaseDetailPage({
           ))}
         </dl>
         <p className="mt-3 text-[11px] text-zinc-400">
-          信息来源：{caseItem.source}
+          信息来源：{caseItem.sources.join(" / ")}
         </p>
+      </section>
+
+      {/* 编辑摘要 */}
+      <section className="mt-10">
+        <h2 className="mb-4 text-base font-semibold text-zinc-900">
+          编辑摘要
+        </h2>
+        <p className="text-sm leading-7 text-zinc-600">{caseItem.editorSummary}</p>
       </section>
 
       {/* 创业动机 */}
@@ -129,7 +145,12 @@ export default async function CaseDetailPage({
               <span className="absolute -left-[31px] top-1 flex h-3 w-3 items-center justify-center rounded-full border border-zinc-300 bg-white">
                 <span className="h-1.5 w-1.5 rounded-full bg-zinc-900" />
               </span>
-              <div className="text-xs font-semibold text-zinc-800">{t.time}</div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold text-zinc-800">{t.date}</span>
+                <span className="rounded border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-[10px] text-zinc-500">
+                  {t.type}
+                </span>
+              </div>
               <p className="mt-1 text-sm leading-6 text-zinc-600">{t.event}</p>
             </li>
           ))}
@@ -170,6 +191,23 @@ export default async function CaseDetailPage({
           ))}
         </ul>
       </section>
+
+      {/* 如果今天重做 */}
+      {caseItem.rebuildPlan && (
+        <section className="mt-12 rounded-2xl border border-zinc-200 bg-white p-6">
+          <div className="mb-2 flex items-center justify-between">
+            <h2 className="text-base font-semibold text-zinc-900">
+              如果今天重做
+            </h2>
+            {caseItem.opportunityScore && (
+              <span className="rounded-full bg-zinc-900 px-2.5 py-1 text-xs font-medium text-white">
+                机会分 {caseItem.opportunityScore}/10
+              </span>
+            )}
+          </div>
+          <p className="text-sm leading-7 text-zinc-600">{caseItem.rebuildPlan}</p>
+        </section>
+      )}
 
       {/* 相关案例 */}
       {related.length > 0 && (

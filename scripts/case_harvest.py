@@ -34,6 +34,9 @@ REPORT_DIR = os.path.join(PROJECT_ROOT, "codeact", "output")
 VALID_DEAD_CAUSES = ["获客失败", "需求验证缺失", "商业模式脆弱", "成本结构失衡", "同质化竞争", "合规与决策风险"]
 VALID_STATUSES = ["dead", "acquired", "pivoted"]
 VALID_FUNDING_TYPES = ["自筹", "融资", "混合"]
+SECONDARY_TAGS = ["资金断裂", "团队解散", "创始人退出", "监管处罚", "技术淘汰", "数据泄露", "恶性竞争", "增长失速", "收购后关停", "平台封禁"]
+VALID_TL_TYPES = ["成立", "融资", "产品发布", "关键招聘", "危机", "关闭"]
+VALID_SOURCE_TYPES = ["interview", "public_record", "ai_assisted", "crowdsourced"]
 TZ_CST = timezone(timedelta(hours=8))
 
 SEARCH_KW_ZH = ["AI创业失败", "AI公司倒闭", "AI产品关停", "创业失败复盘", "独立开发者 失败", "AI创业 关停", "创业公司倒闭", "科技公司关停", "APP停运", "产品下线", "AI应用关闭", "创业项目终止", "创业公司破产", "AI独角兽倒闭", "软件停止服务", "项目解散"]
@@ -452,7 +455,7 @@ def fetch_all(cands, n=20):
     return ok
 
 
-EXTRACT_PROMPT = """你是创业失败案例研究员。阅读文章,提取 1 个 AI/科技创业失败的真实案例。
+EXTRACT_PROMPT = """你是创业失败案例研究员。阅读文章,提取 1 个 AI/科技创业失败的真实案例，输出一份完整失败档案。
 
 规则:
 - 只提取真实案例。若无, slug 返回空字符串。
@@ -462,19 +465,32 @@ EXTRACT_PROMPT = """你是创业失败案例研究员。阅读文章,提取 1 �
 - 已有案例(仅作重复判断参考): {existing}
 - 所有字段基于文章事实, 不编造。多个案例取最详细的 1 个。
 - JSON 字符串值中所有双引号必须转义为 \"，禁止输出未转义的双引号。
-- timelineJson/breakdownJson/lessonsJson 必须是真实 JSON 数组（不是字符串）。timelineJson 每项是 {{"date": "...", "event": "..."}} 对象；breakdownJson 每项是 {{"factor": "...", "weight": ...}} 对象；lessonsJson 每项是字符串。示例: "timelineJson":[{{"date":"2024-01","event":"成立"}}]
+- timelineJson/breakdownJson/lessonsJson/investorsJson/sourcesJson/secondaryTagsJson 必须是真实 JSON 数组（不是字符串）。
 - 输出必须是一个完整的 JSON 对象，不要截断。
 - slug: 全小写英文短横线
-- deadCause 必须六选一: 获客失败, 需求验证缺失, 商业模式脆弱, 成本结构失衡, 同质化竞争, 合规与决策风险
+- primaryTag 必须六选一: 获客失败, 需求验证缺失, 商业模式脆弱, 成本结构失衡, 同质化竞争, 合规与决策风险
+- secondaryTagsJson: 0-3 个副标签，只能从字典选: 资金断裂, 团队解散, 创始人退出, 监管处罚, 技术淘汰, 数据泄露, 恶性竞争, 增长失速, 收购后关停, 平台封禁
+- timelineJson: 3-8 个关键事件，每项 {{"date":"2024-01","type":"产品发布","event":"..."}}；type 只能从 成立/融资/产品发布/关键招聘/危机/关闭 选
+- breakdownJson: 至少3个 {{"layer":"表层原因","detail":"说明"}}；layer 用 表层原因/中间机制/深层机制 三层
+- lessonsJson: 3-5 条字符串
 - epitaph: 2-3行墓志铭含关键数字
 - motivation: 100-200字创业动机
-- timelineJson: JSON数组字符串 如 [{{"time":"2024","event":"成立"}}] 3-6个元素
-- breakdownJson: JSON数组字符串 如 [{{"layer":"表层原因","detail":"说明"}}] 至少3个
-- lessonsJson: JSON字符串数组 如 ["教训1","教训2","教训3"] 3-5条
+- editorSummary: 80-150字编辑摘要，概括公司、模式、结局
+- postmortem: 200-400字详细复盘：怎么死的、为什么、对创业者的意义
+- founderAccount: 若文章引用创始人原话/自述则填原文，否则空字符串
+- businessModel: 商业模式（如"SaaS 订阅"/"一次性买断"/"广告"/"电商"等）
+- totalFunding: 总融资额文本（如"约 $500 万"），无则空字符串
+- fundingRounds: 融资轮次数字（0 表示未融资/未知）
+- lastStage: 最后融资阶段（如"A 轮"/"种子轮"），无则空字符串
+- investorsJson: 投资方名称数组（如公开），无则 []
+- sourcesJson: 文章/报道来源链接数组（至少 1 个 URL）
+- sourceType: 可信度来源，interview(当事人自述)/public_record(公开记录)/ai_assisted(AI辅助采集)/crowdsourced(社区投稿)，通常取 public_record 或 ai_assisted
+- rebuildPlan: 可选，"如果今天重做会怎么做"的 100-200 字建议；无法给出合理建议则空字符串
+- opportunityScore: 可选，1-10 整数，衡量该方向重做的机会大小；无法评估则 0
 - source: 报道媒体名
 
 只输出一个 JSON 对象, 字段:
-slug,name,status,founderBg,region,industry,startedAt,closedAt,lifespanMonths,investment,fundingType,deadCause,deadCauseSub,source,verified,epitaph,motivation,timelineJson,breakdownJson,lessonsJson
+slug,name,status,founderBg,region,industry,businessModel,startedAt,closedAt,lifespanMonths,totalFunding,fundingRounds,lastStage,investorsJson,fundingType,primaryTag,secondaryTagsJson,timelineJson,founderAccount,editorSummary,postmortem,sourcesJson,breakdownJson,lessonsJson,sourceType,verified,rebuildPlan,opportunityScore,epitaph,motivation,source
 
 文章({url}):
 {content}"""
@@ -578,24 +594,37 @@ def fix_json_content(content, orig_prompt):
 
 def format_case_ts(rec):
     L = ["  {"]
-    for k in ["slug", "name", "founderBg", "region", "industry", "startedAt", "closedAt", "investment", "source"]:
-        L.append(f"    {k}: {ts_escape(rec.get(k, ''))},")
+    L.append(f"    slug: {ts_escape(rec.get('slug', ''))},")
+    L.append(f"    name: {ts_escape(rec.get('name', ''))},")
     L.append(f"    status: {ts_escape(rec.get('status', 'dead'))},")
+    L.append(f"    foundedYear: {ts_escape(rec.get('startedAt', ''))},")
+    L.append(f"    closedYear: {ts_escape(rec.get('closedAt', ''))},")
+    L.append(f"    region: {ts_escape(rec.get('region', ''))},")
+    L.append(f"    industry: {ts_escape(rec.get('industry', ''))},")
+    L.append(f"    businessModel: {ts_escape(rec.get('businessModel', ''))},")
     L.append(f"    lifespanMonths: {int(rec.get('lifespanMonths', 0))},")
+    L.append(f"    totalFunding: {ts_escape(rec.get('totalFunding', ''))},")
+    L.append(f"    fundingRounds: {int(rec.get('fundingRounds', 0))},")
+    L.append(f"    lastStage: {ts_escape(rec.get('lastStage', ''))},")
+    L.append(f"    investors: {json.dumps(rec.get('investors', []), ensure_ascii=False)},")
     L.append(f"    fundingType: {ts_escape(rec.get('fundingType', '自筹'))},")
-    L.append(f"    deadCause: {ts_escape(rec.get('deadCause', ''))},")
-    L.append(f"    deadCauseSub: {ts_escape(rec.get('deadCauseSub', ''))},")
-    L.append(f"    verified: {'true' if rec.get('verified', True) else 'false'},")
-    for k in ["epitaph", "motivation"]:
-        L.append(f"    {k}: {ts_escape(rec.get(k, ''))},")
+    L.append(f"    primaryTag: {ts_escape(rec.get('primaryTag', ''))},")
+    L.append(f"    secondaryTags: {json.dumps(rec.get('secondaryTags', []), ensure_ascii=False)},")
     L.append("    timeline: [")
     for ev in rec.get("timeline", []):
         if isinstance(ev, dict):
-            t, e = str(ev.get("time", "")), str(ev.get("event", ""))
+            d, t, e = str(ev.get("date", "")), str(ev.get("type", "")), str(ev.get("event", ""))
         else:
-            t, e = "", ""
-        L.append(f"      {{ time: {ts_escape(t)}, event: {ts_escape(e)} }},")
+            d, t, e = "", "", ""
+        L.append(f"      {{ date: {ts_escape(d)}, type: {ts_escape(t)}, event: {ts_escape(e)} }},")
     L.append("    ],")
+    L.append(f"    founderAccount: {ts_escape(rec.get('founderAccount', ''))},")
+    L.append(f"    editorSummary: {ts_escape(rec.get('editorSummary', ''))},")
+    L.append(f"    postmortem: {ts_escape(rec.get('postmortem', ''))},")
+    L.append(f"    sources: {json.dumps(rec.get('sources', []), ensure_ascii=False)},")
+    L.append(f"    founderBg: {ts_escape(rec.get('founderBg', ''))},")
+    L.append(f"    epitaph: {ts_escape(rec.get('epitaph', ''))},")
+    L.append(f"    motivation: {ts_escape(rec.get('motivation', ''))},")
     L.append("    breakdown: [")
     for bl in rec.get("breakdown", []):
         if isinstance(bl, dict):
@@ -608,6 +637,14 @@ def format_case_ts(rec):
     for ls in rec.get("lessons", []):
         L.append(f"      {ts_escape(ls)},")
     L.append("    ],")
+    L.append(f"    sourceType: {ts_escape(rec.get('sourceType', 'ai_assisted'))},")
+    L.append(f"    verified: {'true' if rec.get('verified', True) else 'false'},")
+    rebuild = str(rec.get("rebuildPlan", "") or "")
+    score = int(rec.get("opportunityScore", 0) or 0)
+    if rebuild:
+        L.append(f"    rebuildPlan: {ts_escape(rebuild)},")
+    if score > 0:
+        L.append(f"    opportunityScore: {score},")
     L.append("  }")
     return "\n".join(L)
 
@@ -686,13 +723,16 @@ def extract_cases(fetched, exist_slugs, exist_names, exist_names_norm, exist_sou
                 why = f"疑似(name子串重叠): {name}"
             log(f"[去重] {slug} ({why})")
             continue
-        if result.get("deadCause") not in VALID_DEAD_CAUSES:
-            log(f"[校验] 死因无效: {result.get('deadCause')}")
+        if result.get("primaryTag") not in VALID_DEAD_CAUSES:
+            log(f"[校验] 死因无效: {result.get('primaryTag')}")
             continue
 
         tl = safe_json_array(result.get("timelineJson"))
         bd = safe_json_array(result.get("breakdownJson"))
         ls = safe_json_array(result.get("lessonsJson"))
+        sec = safe_json_array(result.get("secondaryTagsJson"))
+        inv = safe_json_array(result.get("investorsJson"))
+        srcs = safe_json_array(result.get("sourcesJson"))
         if len(tl) < 3:
             log(f"[校验] tl<3: {slug}")
             continue
@@ -704,21 +744,40 @@ def extract_cases(fetched, exist_slugs, exist_names, exist_names_norm, exist_sou
             continue
 
         tl = [t if isinstance(t, dict) else {} for t in tl]
+        for t in tl:
+            if str(t.get("type", "")) not in VALID_TL_TYPES:
+                t["type"] = "危机"
         bd = [b if isinstance(b, dict) else {} for b in bd]
         ls = [str(x) for x in ls]
+        sec = [str(x) for x in sec if str(x) in SECONDARY_TAGS][:3]
+        inv = [str(x) for x in inv][:6]
+        if not srcs:
+            srcs = [final_url]
+        st = str(result.get("sourceType", "ai_assisted"))
+        if st not in VALID_SOURCE_TYPES:
+            st = "ai_assisted"
 
         rec = {
             "slug": slug, "name": name,
             "status": result.get("status") if result.get("status") in VALID_STATUSES else "dead",
             "founderBg": str(result.get("founderBg", "")), "region": str(result.get("region", "")),
-            "industry": str(result.get("industry", "")), "startedAt": str(result.get("startedAt", "")),
+            "industry": str(result.get("industry", "")), "businessModel": str(result.get("businessModel", "")),
+            "startedAt": str(result.get("startedAt", "")),
             "closedAt": str(result.get("closedAt", "")), "lifespanMonths": int(result.get("lifespanMonths", 0)),
-            "investment": str(result.get("investment", "")),
+            "totalFunding": str(result.get("totalFunding", "")),
+            "fundingRounds": int(result.get("fundingRounds", 0) or 0),
+            "lastStage": str(result.get("lastStage", "")), "investors": inv,
             "fundingType": result.get("fundingType") if result.get("fundingType") in VALID_FUNDING_TYPES else "自筹",
-            "deadCause": str(result.get("deadCause", "")), "deadCauseSub": str(result.get("deadCauseSub", "")),
+            "primaryTag": str(result.get("primaryTag", "")), "secondaryTags": sec,
+            "founderAccount": str(result.get("founderAccount", "")),
+            "editorSummary": str(result.get("editorSummary", "")),
+            "postmortem": str(result.get("postmortem", "")), "sources": srcs,
             "source": str(result.get("source", "")), "verified": bool(result.get("verified", True)),
             "epitaph": str(result.get("epitaph", "")), "motivation": str(result.get("motivation", "")),
             "timeline": tl, "breakdown": bd, "lessons": ls, "sourceUrl": final_url,
+            "rebuildPlan": str(result.get("rebuildPlan", "") or ""),
+            "opportunityScore": int(result.get("opportunityScore", 0) or 0),
+            "sourceType": st,
         }
         extracted.append(rec)
         exist_slugs.add(slug)
@@ -726,7 +785,7 @@ def extract_cases(fetched, exist_slugs, exist_names, exist_names_norm, exist_sou
             exist_names_norm.add(nk)
         if sk:
             exist_sources_norm.add(sk)
-        log(f"[✓] {slug} — {rec['name']} ({rec['deadCause']})")
+        log(f"[✓] {slug} — {rec['name']} ({rec['primaryTag']})")
     return extracted
 
 
@@ -738,7 +797,7 @@ def gen_report(new_cases, total):
     if new_cases:
         lines += ["| # | Slug | 墓碑名 | 死因 | 来源 |", "|---|------|--------|------|------|"]
         for i, c in enumerate(new_cases, 1):
-            lines.append(f"| {i} | `{c['slug']}` | {c['name']} | {c['deadCause']} | [{c['source']}]({c.get('sourceUrl','')}) |")
+            lines.append(f"| {i} | `{c['slug']}` | {c['name']} | {c['primaryTag']} | [{c['source']}]({c.get('sourceUrl','')}) |")
     else:
         lines.append("本次未找到新案例。")
     lines += ["", f"*累计: {total}*"]

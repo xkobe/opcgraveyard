@@ -8,12 +8,15 @@ interface FormState {
   founderBg: string;
   region: string;
   industry: string;
-  startedAt: string;
-  closedAt: string;
-  investment: string;
+  businessModel: string;
+  foundedYear: string;
+  closedYear: string;
+  totalFunding: string;
+  fundingRounds: string;
+  investors: string;
   fundingType: string;
-  deadCause: string;
-  deadCauseSub: string;
+  primaryTag: string;
+  secondaryTags: string;
   motivation: string;
   story: string;
   lessons: string;
@@ -26,12 +29,15 @@ const INITIAL: FormState = {
   founderBg: '',
   region: '',
   industry: '',
-  startedAt: '',
-  closedAt: '',
-  investment: '',
+  businessModel: '',
+  foundedYear: '',
+  closedYear: '',
+  totalFunding: '',
+  fundingRounds: '',
+  investors: '',
   fundingType: '自筹',
-  deadCause: '',
-  deadCauseSub: '',
+  primaryTag: '',
+  secondaryTags: '',
   motivation: '',
   story: '',
   lessons: '',
@@ -82,12 +88,15 @@ export function ContributeForm() {
       `创始人背景：${form.founderBg}`,
       `地区：${form.region}`,
       `行业：${form.industry}`,
-      `成立时间：${form.startedAt}`,
-      `关闭时间：${form.closedAt}`,
-      `投入金额：${form.investment}`,
+      `商业模式：${form.businessModel}`,
+      `成立时间：${form.foundedYear}`,
+      `关闭时间：${form.closedYear}`,
+      `总融资额：${form.totalFunding}`,
+      `融资轮次：${form.fundingRounds}`,
+      `投资方：${form.investors}`,
       `资金类型：${form.fundingType}`,
-      `一级死因：${form.deadCause}`,
-      `死因细分：${form.deadCauseSub}`,
+      `主标签（死因）：${form.primaryTag}`,
+      `副标签：${form.secondaryTags}`,
       '',
       '创业动机与初衷：',
       form.motivation,
@@ -146,28 +155,44 @@ export function ContributeForm() {
             placeholder="如：AI 工具 / 内容创作 / 电商…"
           />
         </Field>
+        <Field label="商业模式">
+          <input
+            className={inputCls}
+            value={form.businessModel}
+            onChange={(e) => set('businessModel', e.target.value)}
+            placeholder="如：SaaS 订阅 / 一次性买断 / 广告…"
+          />
+        </Field>
         <Field label="成立时间">
           <input
             className={inputCls}
-            value={form.startedAt}
-            onChange={(e) => set('startedAt', e.target.value)}
+            value={form.foundedYear}
+            onChange={(e) => set('foundedYear', e.target.value)}
             placeholder="如：2025-06"
           />
         </Field>
         <Field label="关闭时间">
           <input
             className={inputCls}
-            value={form.closedAt}
-            onChange={(e) => set('closedAt', e.target.value)}
+            value={form.closedYear}
+            onChange={(e) => set('closedYear', e.target.value)}
             placeholder="如：2026-03"
           />
         </Field>
-        <Field label="投入金额">
+        <Field label="总融资额">
           <input
             className={inputCls}
-            value={form.investment}
-            onChange={(e) => set('investment', e.target.value)}
+            value={form.totalFunding}
+            onChange={(e) => set('totalFunding', e.target.value)}
             placeholder="如：3 万元 / $120万…"
+          />
+        </Field>
+        <Field label="融资轮次">
+          <input
+            className={inputCls}
+            value={form.fundingRounds}
+            onChange={(e) => set('fundingRounds', e.target.value)}
+            placeholder="如：0（自筹）/ 1 / 2…"
           />
         </Field>
         <Field label="资金类型">
@@ -181,12 +206,20 @@ export function ContributeForm() {
             <option value="混合">混合</option>
           </select>
         </Field>
-        <Field label="一级死因" required>
+        <Field label="投资方">
+          <input
+            className={inputCls}
+            value={form.investors}
+            onChange={(e) => set('investors', e.target.value)}
+            placeholder="如：某某基金 / 个人天使，多个用顿号分隔"
+          />
+        </Field>
+        <Field label="主标签（死因）" required>
           <select
             required
             className={inputCls}
-            value={form.deadCause}
-            onChange={(e) => set('deadCause', e.target.value)}
+            value={form.primaryTag}
+            onChange={(e) => set('primaryTag', e.target.value)}
           >
             <option value="">选择最接近的死因…</option>
             {DEATH_CAUSES.map((d) => (
@@ -196,12 +229,12 @@ export function ContributeForm() {
             ))}
           </select>
         </Field>
-        <Field label="死因细分">
+        <Field label="副标签">
           <input
             className={inputCls}
-            value={form.deadCauseSub}
-            onChange={(e) => set('deadCauseSub', e.target.value)}
-            placeholder="如：大客户依赖 / 数据源缺失 / 回款风险…"
+            value={form.secondaryTags}
+            onChange={(e) => set('secondaryTags', e.target.value)}
+            placeholder="如：资金断裂、团队解散（0-3 个，顿号分隔）"
           />
         </Field>
       </div>

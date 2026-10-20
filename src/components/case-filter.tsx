@@ -35,7 +35,7 @@ export function CaseFilter({
   const filtered = useMemo(() => {
     const list = cases
       .filter((c) => industry === '全部' || c.industry === industry)
-      .filter((c) => cause === '全部' || c.deadCause === cause)
+      .filter((c) => cause === '全部' || c.primaryTag === cause)
       .filter((c) => region === '全部' || c.region === region)
       .filter((c) => {
         if (!query.trim()) return true;
@@ -44,7 +44,7 @@ export function CaseFilter({
           c.name.toLowerCase().includes(q) ||
           c.industry.toLowerCase().includes(q) ||
           c.region.toLowerCase().includes(q) ||
-          c.deadCause.toLowerCase().includes(q) ||
+          c.primaryTag.toLowerCase().includes(q) ||
           c.epitaph.toLowerCase().includes(q)
         );
       });
@@ -56,7 +56,7 @@ export function CaseFilter({
     }
     if (sort === 'investment') {
       return [...list].sort((a, b) =>
-        String(b.investment).localeCompare(String(a.investment)),
+        String(b.totalFunding).localeCompare(String(a.totalFunding)),
       );
     }
     return list;

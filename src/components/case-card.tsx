@@ -3,7 +3,7 @@ import { getCauseMeta, type CaseRecord } from '@/data/cases';
 import { cn } from '@/lib/utils';
 
 export function CaseCard({ caseItem }: { caseItem: CaseRecord }) {
-  const cause = getCauseMeta(caseItem.deadCause);
+  const cause = getCauseMeta(caseItem.primaryTag);
   return (
     <Link
       href={`/cases/${caseItem.slug}`}
@@ -42,7 +42,7 @@ export function CaseCard({ caseItem }: { caseItem: CaseRecord }) {
         <span className="tabular-nums">
           <span className="text-zinc-400">投入 </span>
           <span className="font-semibold text-zinc-900">
-            {caseItem.investment}
+            {caseItem.totalFunding}
           </span>
         </span>
         <span
