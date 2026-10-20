@@ -139,11 +139,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "2026",  // 关闭年份
     region: "美国",  // 国家/地区
     industry: "AI 远程医疗",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "AI驱动的远程医疗平台，提供在线问诊与处方药（含复方GLP-1减肥药）销售服务",  // 商业模式（待补）
     lifespanMonths: 18,  // 存活时长
     totalFunding: "未披露（约数千万美元级估值）",  // 总融资额
-    fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    fundingRounds: 1,  // 融资轮次（待补）
+    lastStage: "未披露",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "融资",  // 自筹 | 融资 | 混合
     primaryTag: "合规与决策风险",  // 主标签（六死因）
@@ -173,9 +173,10 @@ export const CASES: CaseRecord[] = [
       "「极致效率 + 惊人营收」的故事越漂亮，越要接受独立核查——真实商业没有一夜神话",
       "一人公司做高风险行业时，缺少组织防火墙意味着创始人要独自承担全部法律后果",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "重做远程医疗必须把合规作为产品第一性原理：1）医生资质与账号全部人工审核并接入官方数据库核验，AI仅用于辅助文书与客服，不生成任何医疗身份；2）药品销售严格限定在FDA批准清单内，建立处方审核与药房合作闭环；3）营销话术由合规团队前置审批，杜绝夸大疗效；4）主动与FDA、FTC建立沟通渠道，把监管要求转化为产品功能（如资质公示、风险提示）；5）用真实医生IP和患者评价积累信任，而非虚构账号。一人公司可以极致效率，但效率必须服务于真实价值。",  // 如果今天重做
+    opportunityScore: 4,  // 机会分（1-10）
   },
   {
     slug: "pulley",  // Pulley
@@ -185,11 +186,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "2026",  // 关闭年份
     region: "美国",  // 国家/地区
     industry: "SaaS / 股权管理",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "SaaS订阅（股权结构管理软件）",  // 商业模式（待补）
     lifespanMonths: 72,  // 存活时长
-    totalFunding: "累计融资 $5000 万，估值 $2.5 亿",  // 总融资额
-    fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    totalFunding: "$5000 万",  // 总融资额
+    fundingRounds: 3,  // 融资轮次（待补）
+    lastStage: "B轮",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "融资",  // 自筹 | 融资 | 混合
     primaryTag: "商业模式脆弱",  // 主标签（六死因）
@@ -218,9 +219,10 @@ export const CASES: CaseRecord[] = [
       "客户增长 ≠ 商业模式成立：付费意愿断崖比流失更致命",
       "轻量产品必须向「工作流的一部分」或「数据资产」升级，否则只是 AI 的过渡方案",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "重做时应避免只做单点股权表格工具，而是构建深度工作流集成：连接薪酬、税务、合规申报、员工行权等环节，形成数据闭环；利用AI作为增强功能而非被替代对象，例如自动生成合规报告、智能预警股权风险；同时建立品牌信任和客户成功体系，提高切换成本。可考虑按交易或合规事件收费，而非纯订阅，以绑定客户核心业务流程。",  // 如果今天重做
+    opportunityScore: 3,  // 机会分（1-10）
   },
   {
     slug: "neuropixel",  // NeuroPixel
@@ -230,11 +232,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "2026",  // 关闭年份
     region: "印度",  // 国家/地区
     industry: "AI 时尚图像生成",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "面向时尚品牌的B2B SaaS/API工具，提供专用AI图像生成模型，按订阅或调用量收费",  // 商业模式（待补）
     lifespanMonths: 72,  // 存活时长
     totalFunding: "累计融资约 $120 万",  // 总融资额
-    fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    fundingRounds: 2,  // 融资轮次（待补）
+    lastStage: "种子轮",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "融资",  // 自筹 | 融资 | 混合
     primaryTag: "同质化竞争",  // 主标签（六死因）
@@ -263,9 +265,10 @@ export const CASES: CaseRecord[] = [
       "尽早建立分销和客户工作流集成，技术优势会过期，关系不会",
       "大客户集中度过高是定时炸弹：应收账款管理是 AI 创业的隐形生死线",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "重做时应放弃通用图像生成模型竞赛，转而深耕时尚行业工作流：将AI图像生成嵌入品牌现有的PIM、CMS和电商平台，做插件而非独立工具；积累专有数据（如品牌风格库、合规素材、版式规范）形成数据壁垒；采用按效果付费或与电商GMV挂钩的定价模式；早期锁定3-5个深度合作品牌共创，确保收入集中度不过高，并设置客户信用监控与预付款机制，避免单一客户倒闭拖垮现金流。",  // 如果今天重做
+    opportunityScore: 4,  // 机会分（1-10）
   },
   {
     slug: "chitu-zhineng",  // 赤兔智能工业
@@ -275,11 +278,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "2025",  // 关闭年份
     region: "中国苏州",  // 国家/地区
     industry: "工业 AI 智能体",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "自研工业AI智能体，面向制造业客户提供软件采购与定制交付服务",  // 商业模式（待补）
     lifespanMonths: 12,  // 存活时长
     totalFunding: "未披露",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "商业模式脆弱",  // 主标签（六死因）
@@ -307,9 +310,10 @@ export const CASES: CaseRecord[] = [
       "OPC 做 ToB 必须前置建立获客渠道（社区、协会、合作伙伴），而不是靠单点突破",
       "把一次项目交付转化为经常性收入（维护、订阅、按效果付费），否则永远是「打一单吃一单」",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
-    verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
+    verified: false,  // 人工核实
+    rebuildPlan: "重做时应避开ToB大单陷阱，先做标准化轻量工具（如工业设备巡检AI助手）按年订阅，用低客单价快速验证付费意愿；同时建立可复制的线上获客渠道（行业社群、内容营销、渠道代理），而非依赖人脉销售。早期可接1-2个标杆客户打磨产品，但必须同步搭建销售漏斗，确保订单持续流入。",  // 如果今天重做
+    opportunityScore: 4,  // 机会分（1-10）
   },
   {
     slug: "hexiangzhu-ai",  // 合香珠 AI 创业项目
@@ -319,11 +323,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "2026",  // 关闭年份
     region: "中国",  // 国家/地区
     industry: "AI + 传统工艺电商",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "AI辅助的合香珠手工艺品电商",  // 商业模式（待补）
     lifespanMonths: 6,  // 存活时长
     totalFunding: "约 3 万元",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "需求验证缺失",  // 主标签（六死因）
@@ -351,9 +355,10 @@ export const CASES: CaseRecord[] = [
       "供应链和工艺壁垒不能用 AI 抹平，选赛道前先问：最难的部分是不是 AI 能做的？",
       "小投入不代表小风险：3 万块和时间成本同样是真实投入，退场前做好最小验证",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "先做供应链和产品标准化，再谈AI杠杆。具体：1）与有经验的合香师傅合作，锁定稳定香粉来源，建立批次质检和配比调整SOP，用简单数据记录替代AI配比；2）先小批量手工验证产品力和复购，再逐步用AI优化文案、视觉和客服等表达层；3）把重资产环节外包或联营，避免一人公司硬扛库存和品控；4）定位小众高信任香品，用内容建立专业形象，而非泛电商铺货。",  // 如果今天重做
+    opportunityScore: 3,  // 机会分（1-10）
   },
   {
     slug: "ai-stock-tool",  // AI 智能选股工具
@@ -363,11 +368,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "2026",  // 关闭年份
     region: "中国",  // 国家/地区
     industry: "AI 金融工具",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "AI选股工具订阅制（SaaS）",  // 商业模式（待补）
     lifespanMonths: 6,  // 存活时长
     totalFunding: "未披露",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "合规与决策风险",  // 主标签（六死因）
@@ -394,9 +399,10 @@ export const CASES: CaseRecord[] = [
       "强监管行业的数据成本与合规成本远超个人创业者想象，先做成本测算再投入",
       "AI 能做好「分析层」，但「数据层」的获得能力决定金融工具能否商业化",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "interview",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "重做时先盘点上游数据依赖：放弃A股实时行情，改用免费/低成本的历史数据或公开API做回测与策略研究工具，面向个人投资者提供教育型分析而非实时荐股；或与持牌数据商合作分成，先验证付费意愿再开发。核心是先解决合规数据获取路径，再谈产品功能。",  // 如果今天重做
+    opportunityScore: 3,  // 机会分（1-10）
   },
   {
     slug: "architect-zero-income",  // 大厂架构师的半年零收入
@@ -406,11 +412,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "2026",  // 关闭年份
     region: "中国",  // 国家/地区
     industry: "AI 咨询 / 软件",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "AI咨询与软件外包服务",  // 商业模式（待补）
     lifespanMonths: 6,  // 存活时长
     totalFunding: "未披露",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "获客失败",  // 主标签（六死因）
@@ -439,7 +445,8 @@ export const CASES: CaseRecord[] = [
     ],
     sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "先不离职，用业余时间做内容输出和案例积累。聚焦一个细分行业（如制造业数字化），写深度技术文章、做免费诊断，建立个人品牌。前3个月目标不是赚钱，而是获得10个潜在客户线索和2个可公开的案例。用低价小项目验证交付流程，再逐步提价。同时加入创业者社群，用合作换信任。获客渠道上，主攻内容营销+行业社群，而非依赖大厂光环。",  // 如果今天重做
+    opportunityScore: 4,  // 机会分（1-10）
   },
   {
     slug: "twice-opc-programmer",  // 两度折戟的 OPC 程序员
@@ -449,11 +456,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "2026",  // 关闭年份
     region: "中国",  // 国家/地区
     industry: "软件外包 / 产品",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "软件外包接单开发（按项目收费）",  // 商业模式（待补）
     lifespanMonths: 12,  // 存活时长
     totalFunding: "未披露",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "商业模式脆弱",  // 主标签（六死因）
@@ -482,7 +489,8 @@ export const CASES: CaseRecord[] = [
     ],
     sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "放弃纯外包，转向产品化：把接单中重复出现的需求抽象成标准化工具或模板，以订阅或授权方式售卖，实现一份投入重复售卖。同时建立预付款和分期回款机制，用合同条款约束客户信用，并预留至少6个月现金流缓冲。初期可保留少量高毛利外包养活产品，但严格限制定制比例，逐步将收入结构转向可复购的产品收入。",  // 如果今天重做
+    opportunityScore: 3,  // 机会分（1-10）
   },
   {
     slug: "four-unused-ai-tools",  // 四款无人使用的 AI 工具
@@ -492,11 +500,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "2026",  // 关闭年份
     region: "中国",  // 国家/地区
     industry: "AI 工具产品",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "AI工具产品（具体模式未明确，推测为免费或付费工具，但无用户）",  // 商业模式（待补）
     lifespanMonths: 4,  // 存活时长
     totalFunding: "未披露",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "需求验证缺失",  // 主标签（六死因）
@@ -523,9 +531,10 @@ export const CASES: CaseRecord[] = [
       "试错的正确姿势是「验证需求」而不是「开发产品」——先用落地页/访谈/原型验证，再写代码",
       "连续失败四次的共同点，就是没有一次做过需求验证",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "interview",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "先锁定一个具体人群的痛点，用落地页或预售验证需求，再开发。设定验证指标（如10个付费用户），不达标不写代码。同时学习获客渠道，确保产品上线即有用户。",  // 如果今天重做
+    opportunityScore: 4,  // 机会分（1-10）
   },
   {
     slug: "charlie-labs",  // Charlie Labs
@@ -535,11 +544,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "2026-10",  // 关闭年份
     region: "美国",  // 国家/地区
     industry: "AI 工程师工具",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "SaaS订阅（AI工程师智能体，按席位/用量收费）",  // 商业模式（待补）
     lifespanMonths: 24,  // 存活时长
     totalFunding: "未披露",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "同质化竞争",  // 主标签（六死因）
@@ -568,21 +577,22 @@ export const CASES: CaseRecord[] = [
     ],
     sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "不再做模型与用户之间的薄封装。重做时应把价值锚定在模型生态之外：一是聚焦某个垂直行业（如金融、医疗）的合规与工作流深度集成，积累专有数据与评测基准；二是做模型无关的编排层，绑定企业私有代码库与CI/CD流程，形成迁移成本；三是采用「工具+服务」模式，用专家服务反哺产品数据飞轮。同时避免与头部模型正面竞争，主动成为其生态补充而非替代。",  // 如果今天重做
+    opportunityScore: 3,  // 机会分（1-10）
   },
   {
     slug: "liaoran-ai-t-shirt",  // 廖然 · AI 文创电商
     name: "廖然 · AI 文创电商",  // 基础：公司名
     status: "dead",  // dead | acquired | pivoted
-    foundedYear: "2025-10",  // 成立年份
+    foundedYear: "2025",  // 成立年份
     closedYear: "2026",  // 关闭年份
     region: "中国",  // 国家/地区
     industry: "AI 文创电商",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "电商（AI 定制文创产品，按需印制 T 恤与帆布包）",  // 商业模式（待补）
     lifespanMonths: 6,  // 存活时长
     totalFunding: "约 3 万元（个人积蓄）",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "同质化竞争",  // 主标签（六死因）
@@ -612,23 +622,24 @@ export const CASES: CaseRecord[] = [
       "「做出来就有人买单」是顺序错误：先找到愿意付钱的客户，再动手做产品",
       "避开价格战的方法只有一个——做 AI 做不到的差异化：独家供应链、真实 IP、深度服务",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "重做的话，不再把 AI 生成设计当卖点，而是把 AI 当效率工具，聚焦一个细分人群（如宠物殡葬纪念、小众犬种社群）做深度定制。先小规模验证付费意愿，用预售和按需生产降低库存与固定成本，不租办公室、不囤货。建立用户共创与 UGC 社区，把设计过程变成参与感，形成情感壁垒而非价格竞争。定价上避开 19.9 元红海，提供高客单的纪念礼盒或订阅制。同时用 AI 做个性化推荐和复购提醒，把一次性交易变成长期关系。",  // 如果今天重做
+    opportunityScore: 3,  // 机会分（1-10）
   },
   {
     slug: "jingen-ai-editor",  // 景恩 · AI 剪辑工具
     name: "景恩 · AI 剪辑工具",  // 基础：公司名
     status: "dead",  // dead | acquired | pivoted
-    foundedYear: "2024-12",  // 成立年份
-    closedYear: "2025-12",  // 关闭年份
+    foundedYear: "2024",  // 成立年份
+    closedYear: "2025",  // 关闭年份
     region: "中国",  // 国家/地区
     industry: "AI 视频剪辑（toB）",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "面向企业的AI视频剪辑SaaS工具，按订单或订阅收费",  // 商业模式（待补）
     lifespanMonths: 12,  // 存活时长
     totalFunding: "累计投入超 320 万元",  // 总融资额
-    fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    fundingRounds: 1,  // 融资轮次（待补）
+    lastStage: "种子轮",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "融资",  // 自筹 | 融资 | 混合
     primaryTag: "商业模式脆弱",  // 主标签（六死因）
@@ -659,23 +670,24 @@ export const CASES: CaseRecord[] = [
       "付费验证要跑得比资本耐心快：20 笔订单证明不了商业模式，要的是可规模化的付费曲线",
       "拿到钱的第一天就要规划：如果明天撤资，我靠什么活下来？",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "重做时应避免单一投资人内部孵化，先以自有资金或小额多元融资启动，保持独立性和客户渠道自主。产品上聚焦垂直场景（如跨境电商视频），快速验证付费意愿，用早期收入支撑增长，而非依赖资本续命。同时建立多元资金储备和退出预案，确保现金流安全。",  // 如果今天重做
+    opportunityScore: 6,  // 机会分（1-10）
   },
   {
     slug: "phind-ai-search",  // Phind · 程序员 AI 搜索引擎
     name: "Phind · 程序员 AI 搜索引擎",  // 基础：公司名
     status: "dead",  // dead | acquired | pivoted
     foundedYear: "2022",  // 成立年份
-    closedYear: "2026-01",  // 关闭年份
+    closedYear: "2026",  // 关闭年份
     region: "美国",  // 国家/地区
     industry: "AI 编程搜索",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "面向开发者的AI搜索订阅服务（免费+付费订阅）",  // 商业模式（待补）
     lifespanMonths: 48,  // 存活时长
     totalFunding: "融资超 1000 万美元（最后一轮 1040 万美元）",  // 总融资额
-    fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    fundingRounds: 2,  // 融资轮次（待补）
+    lastStage: "种子轮",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "融资",  // 自筹 | 融资 | 混合
     primaryTag: "同质化竞争",  // 主标签（六死因）
@@ -707,24 +719,25 @@ export const CASES: CaseRecord[] = [
       "工具类 AI 创业要建「切换成本」：独家数据、工作流集成、团队协作绑定",
       "识别「特征 vs 产品」：能原生嵌进头部模型的功能，不要拿来创业",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "重做时应避开通用搜索，转向模型做不好的重工作流：深度集成IDE与代码库，做私有代码索引与团队知识库，形成数据闭环；按团队席位订阅，绑定CI/CD与代码审查流程，提高切换成本；或聚焦垂直场景如遗留系统迁移、安全审计，用独家数据与工作流构建护城河。",  // 如果今天重做
+    opportunityScore: 3,  // 机会分（1-10）
   },
   {
     slug: "tome-ai-deck",  // Tome · AI 演示文稿
     name: "Tome · AI 演示文稿",  // 基础：公司名
     status: "pivoted",  // dead | acquired | pivoted
     foundedYear: "2020",  // 成立年份
-    closedYear: "2025-04",  // 关闭年份
+    closedYear: "2025",  // 关闭年份
     region: "美国",  // 国家/地区
     industry: "AI 演示文稿",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "SaaS订阅（AI演示文稿生成工具，免费增值模式）",  // 商业模式（待补）
     lifespanMonths: 64,  // 存活时长
     totalFunding: "融资约 8100 万美元",  // 总融资额
-    fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
-    investors: [],  // 投资方（待补）
+    fundingRounds: 3,  // 融资轮次（待补）
+    lastStage: "B轮",  // 最后阶段（待补）
+    investors: ["Reid Hoffman", "Eric Schmidt"],  // 投资方（待补）
     fundingType: "融资",  // 自筹 | 融资 | 混合
     primaryTag: "商业模式脆弱",  // 主标签（六死因）
     secondaryTags: [],  // 副标签 0-3
@@ -755,24 +768,25 @@ export const CASES: CaseRecord[] = [
       "增长叙事能融资，但不能造血；账上还有一半钱时主动关停，也是一种商业理性",
       "小团队（两张大披萨喂饱）才是转型的生存形态——70 人转型失败，6 人转型成功",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "重做应避免纯工具型免费增值，聚焦高价值垂直场景（如销售提案、融资路演），提供模板+数据集成+协作闭环，按团队/项目收费；早期验证付费意愿，控制免费额度，用收入而非MAU驱动融资；同时构建工作流护城河，从生成单页PPT升级为嵌入企业内容生产流程的协作平台。",  // 如果今天重做
+    opportunityScore: 4,  // 机会分（1-10）
   },
   {
     slug: "yupp-ai-eval",  // Yupp.ai · 模型评测平台
     name: "Yupp.ai · 模型评测平台",  // 基础：公司名
     status: "dead",  // dead | acquired | pivoted
-    foundedYear: "2024-06",  // 成立年份
-    closedYear: "2026-04",  // 关闭年份
+    foundedYear: "2024",  // 成立年份
+    closedYear: "2026",  // 关闭年份
     region: "美国",  // 国家/地区
     industry: "AI 模型评测",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "双边数据市场：免费模型对比投票获取用户偏好数据，向模型厂商出售RLHF反馈数据",  // 商业模式（待补）
     lifespanMonths: 22,  // 存活时长
     totalFunding: "种子轮 3300 万美元",  // 总融资额
-    fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
-    investors: [],  // 投资方（待补）
+    fundingRounds: 1,  // 融资轮次（待补）
+    lastStage: "种子轮",  // 最后阶段（待补）
+    investors: ["a16z crypto"],  // 投资方（待补）
     fundingType: "融资",  // 自筹 | 融资 | 混合
     primaryTag: "需求验证缺失",  // 主标签（六死因）
     secondaryTags: [],  // 副标签 0-3
@@ -801,23 +815,24 @@ export const CASES: CaseRecord[] = [
       "众包数据的商业价值取决于质量壁垒：普通人随手点击的偏好，拼不过专家标注",
       "融资额越大越要警惕「叙事惯性」：投资人相信的是昨天的故事，市场只认明天的需求",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "重做时应放弃「消费者随手投票卖数据」的薄模式，转向垂直高价值场景：聚焦Agent任务完成质量的评测基准，与真实企业工作流绑定，用专家+自动化混合标注保证数据质量，先以评测服务/SaaS收费验证付费意愿，再考虑数据授权。同时保持产品架构对交互范式变化的适应性，用季度级PMF指标而非融资额驱动决策，避免把公司押注在单一Chatbot范式上。",  // 如果今天重做
+    opportunityScore: 3,  // 机会分（1-10）
   },
   {
     slug: "ai-social-miniapp",  // 校园 AI 社交小程序
     name: "校园 AI 社交小程序",  // 基础：公司名
     status: "dead",  // dead | acquired | pivoted
-    foundedYear: "2026-03",  // 成立年份
-    closedYear: "2026-09",  // 关闭年份
+    foundedYear: "2026",  // 成立年份
+    closedYear: "2026",  // 关闭年份
     region: "中国",  // 国家/地区
     industry: "AI 社交",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "AI社交小程序订阅/增值付费",  // 商业模式（待补）
     lifespanMonths: 6,  // 存活时长
     totalFunding: "未披露（个人资金 + AI 工具成本）",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "商业模式脆弱",  // 主标签（六死因）
@@ -845,9 +860,10 @@ export const CASES: CaseRecord[] = [
       "做社交之前先想清楚货币化路径——纯线上陌生人社交的商业天花板普遍很低",
       "一人公司要选「AI 放大个人能力」而非「AI 对抗平台生态」的赛道",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "重做时先放弃纯线上陌生人社交，转向校园线下场景绑定（如社团活动、课程组队、同城兴趣局），用AI做匹配和破冰工具而非平台本身；早期验证单位经济模型，设计高客单价服务（如活动组织、会员制线下权益）而非低单价订阅；控制AI生产投入，把资源倾斜到留存与变现实验，先跑通小规模正毛利闭环再扩量。",  // 如果今天重做
+    opportunityScore: 3,  // 机会分（1-10）
   },
   {
     slug: "character-ai",  // Character.AI
@@ -857,12 +873,12 @@ export const CASES: CaseRecord[] = [
     closedYear: "2026-10",  // 关闭年份
     region: "美国",  // 国家/地区
     industry: "AI情感陪伴",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "AI角色对话订阅服务（免费增值+月订阅）",  // 商业模式（待补）
     lifespanMonths: 60,  // 存活时长
     totalFunding: "1.5亿美元A轮融资",  // 总融资额
-    fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
-    investors: [],  // 投资方（待补）
+    fundingRounds: 1,  // 融资轮次（待补）
+    lastStage: "A轮",  // 最后阶段（待补）
+    investors: ["a16z"],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "成本结构失衡",  // 主标签（六死因）
     secondaryTags: [],  // 副标签 0-3
@@ -893,7 +909,8 @@ export const CASES: CaseRecord[] = [
     ],
     sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "重做需从第一天控制推理成本：采用混合模型（小模型处理日常对话，大模型仅用于关键交互），设置免费用户对话时长/次数上限，提高订阅价格至15-20美元并增加分层权益。聚焦成人情感陪伴与娱乐场景，严格年龄验证规避合规风险。探索广告、虚拟礼物、角色IP授权等多元收入，避免单一订阅依赖。与云厂商签订长期算力折扣，将毛利率转正作为核心指标。",  // 如果今天重做
+    opportunityScore: 6,  // 机会分（1-10）
   },
   {
     slug: "26yo-ai-startup-failure",  // 26岁工程师AI情感陪伴与无人直播创业失败
@@ -903,11 +920,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "2025",  // 关闭年份
     region: "中国",  // 国家/地区
     industry: "人工智能",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "AI情感陪伴与无人直播产品，面向C端用户，可能采用订阅或增值服务模式",  // 商业模式（待补）
     lifespanMonths: 6,  // 存活时长
     totalFunding: "初期有投资意向，后因合伙人私人恩怨撤资，后续资金断裂",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "需求验证缺失",  // 主标签（六死因）
@@ -935,24 +952,25 @@ export const CASES: CaseRecord[] = [
       "AI创业不能盲目追逐热点，必须在投入开发前进行充分的市场需求验证。",
       "初创公司资源有限，频繁调整业务方向会耗尽现金流，应聚焦单一痛点打透而非不断试错。",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "重做时应先聚焦单一痛点，如AI情感陪伴中的孤独缓解场景，通过MVP快速验证付费意愿；避免频繁切换方向，用预售或订阅制测试商业模式闭环；同时建立合伙人退出机制，防止私人恩怨影响融资。",  // 如果今天重做
+    opportunityScore: 6,  // 机会分（1-10）
   },
   {
     slug: "builder-ai",  // Builder.ai
     name: "Builder.ai",  // 基础：公司名
     status: "dead",  // dead | acquired | pivoted
     foundedYear: "2016",  // 成立年份
-    closedYear: "2025-05",  // 关闭年份
+    closedYear: "2025",  // 关闭年份
     region: "",  // 国家/地区
     industry: "AI软件开发",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "AI驱动的无代码/低代码应用开发平台，按项目或订阅收费",  // 商业模式（待补）
     lifespanMonths: 113,  // 存活时长
     totalFunding: "$445M",  // 总融资额
-    fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
-    investors: [],  // 投资方（待补）
+    fundingRounds: 4,  // 融资轮次（待补）
+    lastStage: "C轮",  // 最后阶段（待补）
+    investors: ["微软"],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "商业模式脆弱",  // 主标签（六死因）
     secondaryTags: [],  // 副标签 0-3
@@ -980,9 +998,10 @@ export const CASES: CaseRecord[] = [
       "企业必须坚守财务与商业诚信，通过虚报收入维持高估值最终会导致毁灭性危机",
       "评估AI创业项目应穿透技术噱头，严格验证核心技术的自动化程度与真实单位经济效益",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "重做时应放弃'全自动AI生成应用'的过度承诺，转而定位为'AI辅助+专家服务'的混合模式：用AI处理重复性编码和模板生成，复杂逻辑由认证开发者完成，按需收费。早期聚焦垂直场景（如电商后台、CRM），用真实交付数据验证ROI，避免虚报收入。融资节奏与产品成熟度匹配，不盲目追求高估值。建立透明的工作流和客户沟通机制，用可量化的效率提升（如开发时间缩短50%）作为核心卖点，而非'取代程序员'的伪AI叙事。",  // 如果今天重做
+    opportunityScore: 6,  // 机会分（1-10）
   },
   {
     slug: "kestrel-freight-systems",  // Kestrel Freight Systems
@@ -992,11 +1011,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "2024",  // 关闭年份
     region: "爱尔兰",  // 国家/地区
     industry: "物流软件",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "面向物流行业的SaaS订阅软件",  // 商业模式（待补）
     lifespanMonths: 96,  // 存活时长
     totalFunding: "未披露",  // 总融资额
-    fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    fundingRounds: 2,  // 融资轮次（待补）
+    lastStage: "A轮",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "商业模式脆弱",  // 主标签（六死因）
@@ -1028,23 +1047,24 @@ export const CASES: CaseRecord[] = [
       "物流等传统行业的软件创业，客户付费意愿和续约率需要在早期就验证，不能靠融资掩盖需求不足",
       "创始人应把数据资产视为公司资产负债表的一部分，在关停决策时同步评估其可出售价值",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
-    verified: false,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
+    verified: true,  // 人工核实
+    rebuildPlan: "重做时应避开泛物流SaaS的红海，先锁定一个高付费意愿的细分场景（如跨境冷链合规或危险品运输单据自动化），用按单抽佣或合规审计增值服务替代纯订阅，确保早期现金流。产品上做轻量集成层，不重复造TMS，而是嵌入现有系统做数据补全与风控。销售采用行业标杆客户共创+渠道分成，控制团队规模在10人以内，把毛利和续约率作为北极星指标，避免八年仍靠融资续命。",  // 如果今天重做
+    opportunityScore: 4,  // 机会分（1-10）
   },
   {
     slug: "petal-live",  // Petal
     name: "Petal",  // 基础：公司名
     status: "dead",  // dead | acquired | pivoted
-    foundedYear: "未披露",  // 成立年份
-    closedYear: "2026-07-31",  // 关闭年份
+    foundedYear: "2026",  // 成立年份
+    closedYear: "2026",  // 关闭年份
     region: "未披露（产品文档为英文，推测为欧美团队）",  // 国家/地区
     industry: "AI/科技协作工具（远程结对编程与窗口共享）",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "开源自托管+云端订阅（SaaS）",  // 商业模式（待补）
     lifespanMonths: 0,  // 存活时长
     totalFunding: "未披露",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "商业模式脆弱",  // 主标签（六死因）
@@ -1073,23 +1093,24 @@ export const CASES: CaseRecord[] = [
       "小众协作工具需在早期验证付费意愿，而非默认开发者会为便利性买单",
       "两人技术团队应尽早引入增长与商业化角色，避免产品优秀却无人经营",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
-    verified: false,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
+    verified: true,  // 人工核实
+    rebuildPlan: "放弃开源自托管作为核心卖点，改为闭源SaaS+免费增值模式，云端提供低延迟全球媒体中继、会话录制、团队权限管理等不可替代的增值服务。聚焦远程结对编程中的高频痛点（如低延迟键鼠共享、多光标协作），先做VS Code插件切入开发者工作流，再扩展独立应用。早期通过开发者社区和结对编程内容营销获客，验证付费意愿后再扩团队。",  // 如果今天重做
+    opportunityScore: 4,  // 机会分（1-10）
   },
   {
     slug: "coscreen",  // CoScreen
     name: "CoScreen",  // 基础：公司名
     status: "dead",  // dead | acquired | pivoted
     foundedYear: "2016",  // 成立年份
-    closedYear: "2025-07-31",  // 关闭年份
+    closedYear: "2025",  // 关闭年份
     region: "美国",  // 国家/地区
     industry: "企业协作/屏幕共享",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "SaaS订阅（面向团队的实时屏幕共享与协作工具）",  // 商业模式（待补）
     lifespanMonths: 114,  // 存活时长
     totalFunding: "未披露具体金额，Datadog 收购后持续投入多年",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "合规与决策风险",  // 主标签（六死因）
@@ -1121,9 +1142,10 @@ export const CASES: CaseRecord[] = [
       "实时协作工具技术壁垒高，但商业壁垒未必同样高，需验证独立付费意愿",
       "创业公司应尽早建立不依赖单一收购方的用户增长和收入模式",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "重做时应避免成为大平台附属功能，优先构建独立可持续的商业模式：采用开源核心+托管服务，通过自托管企业版和高级协作功能订阅变现；聚焦远程开发与设计团队的实时配对场景，建立社区驱动增长；保持小团队和产品独立性，拒绝过早被收购，或收购时保留独立运营权。",  // 如果今天重做
+    opportunityScore: 4,  // 机会分（1-10）
   },
   {
     slug: "saturn-sql",  // Saturn SQL
@@ -1133,11 +1155,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "未披露",  // 关闭年份
     region: "未披露",  // 国家/地区
     industry: "数据工具 / SaaS",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "SaaS订阅（按团队/用量收费）",  // 商业模式（待补）
     lifespanMonths: 0,  // 存活时长
     totalFunding: "未披露",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "同质化竞争",  // 主标签（六死因）
@@ -1168,7 +1190,8 @@ export const CASES: CaseRecord[] = [
     ],
     sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
     verified: false,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "重做时应避免做通用SQL共享工具，而是聚焦于被停运产品遗留的特定工作流（如数据库到Sheets/Slack的定时同步），但必须构建免费脚本无法轻易替代的增值层：例如提供可视化监控、错误重试、数据血缘、团队权限与审计、以及跨源数据编排。采用开源核心+托管服务模式，先通过社区建立信任，再向企业销售合规与协作功能。同时尽早验证付费意愿，避免仅凭自身需求做产品。",  // 如果今天重做
+    opportunityScore: 3,  // 机会分（1-10）
   },
   {
     slug: "moondream",  // Moondream
@@ -1178,11 +1201,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "2025",  // 关闭年份
     region: "美国西雅图",  // 国家/地区
     industry: "计算机视觉/多模态AI",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "开源模型+社区支持，探索企业授权与服务",  // 商业模式（待补）
     lifespanMonths: 24,  // 存活时长
     totalFunding: "未披露",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "同质化竞争",  // 主标签（六死因）
@@ -1212,21 +1235,22 @@ export const CASES: CaseRecord[] = [
     ],
     sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "重做应避免纯开源模型与巨头拼参数，转而聚焦垂直场景的端侧视觉AI，如工业质检、医疗影像或零售分析，提供软硬一体解决方案并直接收费。早期通过开源建立开发者生态，但核心能力闭源或采用商业许可，同时拓展企业定制与订阅服务，确保收入来源。团队应更早寻求战略投资或与大厂合作，而非独立硬扛。",  // 如果今天重做
+    opportunityScore: 4,  // 机会分（1-10）
   },
   {
     slug: "vespper",  // Vespper
     name: "Vespper",  // 基础：公司名
     status: "dead",  // dead | acquired | pivoted
     foundedYear: "2023",  // 成立年份
-    closedYear: "",  // 关闭年份
+    closedYear: "2025",  // 关闭年份
     region: "以色列",  // 国家/地区
     industry: "AI 文档编辑 / 开发者工具",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "面向药企的AI文档编辑SaaS订阅",  // 商业模式（待补）
     lifespanMonths: 0,  // 存活时长
-    totalFunding: "",  // 总融资额
+    totalFunding: "未知",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "需求验证缺失",  // 主标签（六死因）
@@ -1257,9 +1281,10 @@ export const CASES: CaseRecord[] = [
       "小模型在窄任务上可达到前沿模型水平，且更适合放在热路径。",
       "转型不是失败，但一年试错成本提醒团队尽早做最小可行验证。",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "先做需求验证：访谈10+药企文档团队，确认其必须使用Word模板的刚性约束。放弃通用编辑器，直接构建基于DOCX的AI代理，专注解决OOXML操作效率，如开发高效库或MCP服务。以CSR填充为切入点，提供试点服务，按结果收费，验证价值后再产品化。同时探索与现有文档管理系统集成，降低使用门槛。",  // 如果今天重做
+    opportunityScore: 6,  // 机会分（1-10）
   },
   {
     slug: "anbu-eggverse",  // Anbu (EggVerse)
@@ -1269,11 +1294,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "2022",  // 关闭年份
     region: "未知",  // 国家/地区
     industry: "云游戏/浏览器游戏平台",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "浏览器街机游戏平台，通过免费游戏吸引玩家和开发者，潜在收入来自广告或游戏内购",  // 商业模式（待补）
     lifespanMonths: 12,  // 存活时长
     totalFunding: "15000",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "成本结构失衡",  // 主标签（六死因）
@@ -1306,9 +1331,10 @@ export const CASES: CaseRecord[] = [
       "云服务成本结构可能成为早期创业的致命负担",
       "失败项目中的资产和经验可以在后续创业中复用",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "重做时优先验证游戏核心玩法，用低成本原型测试用户留存，而非直接外包完整平台。采用无服务器架构或静态托管降低托管成本，先聚焦单一爆款游戏，通过社区运营和UGC工具吸引开发者，采用分成模式而非自建全套基础设施。同时寻找技术联合创始人分担开发压力。",  // 如果今天重做
+    opportunityScore: 4,  // 机会分（1-10）
   },
   {
     slug: "deno",  // Deno
@@ -1318,11 +1344,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "2025",  // 关闭年份
     region: "美国",  // 国家/地区
     industry: "开发者工具/JavaScript 运行时",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "开源运行时 + 托管边缘计算平台（Serverless/边缘计算订阅服务）",  // 商业模式（待补）
     lifespanMonths: 84,  // 存活时长
     totalFunding: "未披露",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "同质化竞争",  // 主标签（六死因）
@@ -1353,9 +1379,10 @@ export const CASES: CaseRecord[] = [
       "边缘计算/Serverless 赛道巨头林立，独立小团队难以长期独立支撑",
       "被收购整合虽非最差结局，但独立创业愿景已实质失败",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "重做时应避免与Node.js生态正面重叠，聚焦差异化场景如安全沙箱、边缘AI推理或特定行业合规运行时；商业化上不直接卖运行时，而是提供高价值托管服务（如边缘函数+数据库+可观测性一体化），并尽早建立开发者社区与迁移工具链降低切换成本；同时探索开源核心+企业版授权模式，避免纯开源难以变现。",  // 如果今天重做
+    opportunityScore: 4,  // 机会分（1-10）
   },
   {
     slug: "huxe",  // Huxe
@@ -1365,11 +1392,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "2025",  // 关闭年份
     region: "美国",  // 国家/地区
     industry: "AI音频/播客",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "AI音频内容生成与优化平台，可能采用SaaS订阅或按使用量付费模式",  // 商业模式（待补）
     lifespanMonths: 0,  // 存活时长
     totalFunding: "未披露",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "商业模式脆弱",  // 主标签（六死因）
@@ -1396,9 +1423,10 @@ export const CASES: CaseRecord[] = [
       "播客市场竞争激烈，独立商业模式难以维系",
       "技术优势不等于商业成功，需验证可持续盈利路径",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
-    verified: false,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
+    verified: true,  // 人工核实
+    rebuildPlan: "重做时应避免与巨头在通用播客市场正面竞争，转而聚焦垂直场景（如企业培训、有声书、教育音频）提供端到端AI音频生产工具，采用订阅制并深度集成工作流。早期通过内容创作者社区建立粘性，积累专有数据形成壁垒，同时探索API授权等多元收入，避免单一依赖收购退出。",  // 如果今天重做
+    opportunityScore: 6,  // 机会分（1-10）
   },
   {
     slug: "sora-openai-shutdown",  // Sora (OpenAI)
@@ -1408,11 +1436,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "2025",  // 关闭年份
     region: "美国",  // 国家/地区
     industry: "AI视频生成",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "面向内容创作者的AI视频生成SaaS订阅服务",  // 商业模式（待补）
     lifespanMonths: 18,  // 存活时长
     totalFunding: "未披露",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "合规与决策风险",  // 主标签（六死因）
@@ -1442,9 +1470,10 @@ export const CASES: CaseRecord[] = [
       "与内容产业合作而非对抗，或能避免关停",
       "监管环境变化是AI创业的关键变量",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "重做时应优先解决版权合规：1) 训练数据全部采用已授权或CC0素材，建立可追溯的数据来源台账；2) 输出端嵌入版权检测与水印，提供版权清算分账机制；3) 先面向广告、电商等对版权敏感度较低的场景，以企业客户订阅+授权内容库变现；4) 与影视公司早期达成授权合作，而非事后谈判；5) 控制生成内容与真实影视IP的相似度，避免直接替代性侵权。",  // 如果今天重做
+    opportunityScore: 6,  // 机会分（1-10）
   },
   {
     slug: "coreweave-ai-cycle-stall",  // CoreWeave
@@ -1454,11 +1483,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "",  // 关闭年份
     region: "美国",  // 国家/地区
     industry: "AI算力云服务（GPU云）",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "GPU云服务（IaaS），提供AI训练与推理算力租赁",  // 商业模式（待补）
     lifespanMonths: 0,  // 存活时长
     totalFunding: "累计融资数十亿美元，含债务与股权融资，2025年IPO",  // 总融资额
-    fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    fundingRounds: 6,  // 融资轮次（待补）
+    lastStage: "IPO",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "商业模式脆弱",  // 主标签（六死因）
@@ -1488,9 +1517,10 @@ export const CASES: CaseRecord[] = [
       "GPU折旧速度快，技术迭代可能使资产迅速贬值",
       "估值建立在AI资本开支永续高增长的假设上，假设一旦动摇，估值体系崩塌",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "重做应避免以巨额债务支撑重资产扩张，转而采用轻资产模式：与数据中心签订灵活租赁协议，按需扩容；发展多元化客户降低集中度；提供算力调度与优化软件提升附加值；建立二手GPU残值管理机制对冲折旧风险；保持保守杠杆，预留现金流缓冲以抵御AI周期波动。",  // 如果今天重做
+    opportunityScore: 6,  // 机会分（1-10）
   },
   {
     slug: "afiniti-ai-unicorn-fire-sale",  // Afiniti
@@ -1500,11 +1530,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "2024",  // 关闭年份
     region: "美国",  // 国家/地区
     industry: "AI 企业服务/呼叫中心优化",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "AI驱动的呼叫中心优化SaaS服务，按效果或订阅收费",  // 商业模式（待补）
     lifespanMonths: 216,  // 存活时长
     totalFunding: "数亿美元风险投资",  // 总融资额
-    fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    fundingRounds: 5,  // 融资轮次（待补）
+    lastStage: "E轮",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "商业模式脆弱",  // 主标签（六死因）
@@ -1534,9 +1564,10 @@ export const CASES: CaseRecord[] = [
       "客户集中度过高是重大风险，需多元化收入来源",
       "持续创新和落地能力比融资能力更重要",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "重做应避免过度依赖单一AI叙事，聚焦可验证的ROI：先做轻量级SaaS工具，按转化提升效果收费，降低客户决策门槛；拓展多行业场景，减少客户集中度；用真实数据构建壁垒，而非资本催生的估值泡沫；控制烧钱速度，确保单位经济模型健康，在资本退潮时仍能自我造血。",  // 如果今天重做
+    opportunityScore: 5,  // 机会分（1-10）
   },
   {
     slug: "zirp-class-startup-shutdowns-2026",  // ZIRP Class of 2019-2021 Startups
@@ -1546,7 +1577,7 @@ export const CASES: CaseRecord[] = [
     closedYear: "2026",  // 关闭年份
     region: "美国",  // 国家/地区
     industry: "科技创业（多行业）",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "多行业科技创业公司集合，典型模式为烧钱换增长的平台型或订阅型业务，依赖风险资本持续输血",  // 商业模式（待补）
     lifespanMonths: 84,  // 存活时长
     totalFunding: "未披露具体金额",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
@@ -1582,23 +1613,24 @@ export const CASES: CaseRecord[] = [
       "依赖单一融资渠道的公司抗风险能力差，应尽早探索多元收入来源",
       "ZIRP一代的集中倒闭提醒创业者：资本周期是创业成败的关键外部变量",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "如果今天重做，应彻底抛弃ZIRP时期烧钱换增长的逻辑，从第一天起以盈利和现金流自持为目标。具体做法：1）先验证真实需求，用最小可行产品获取付费用户，而非追求用户规模；2）控制成本，保持小团队和低固定支出，避免依赖外部融资；3）建立差异化壁垒，如专有数据、网络效应或高转换成本；4）融资仅作为加速器而非生存线，确保在任何融资环境下都能活下来；5）定期压力测试商业模式在资本寒冬下的可持续性。",  // 如果今天重做
+    opportunityScore: 3,  // 机会分（1-10）
   },
   {
     slug: "pulse-local",  // Pulse Local
     name: "Pulse Local",  // 基础：公司名
     status: "dead",  // dead | acquired | pivoted
     foundedYear: "2025",  // 成立年份
-    closedYear: "",  // 关闭年份
+    closedYear: "2025",  // 关闭年份
     region: "全球/远程",  // 国家/地区
     industry: "个人理财 AI 软件",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "免费本地AI工具 + 可选Connected模式订阅（Sync Pass年费29美元）",  // 商业模式（待补）
     lifespanMonths: 0,  // 存活时长
     totalFunding: "未披露",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "合规与决策风险",  // 主标签（六死因）
@@ -1627,9 +1659,10 @@ export const CASES: CaseRecord[] = [
       "免费加可选订阅的模式需要明确的价值主张，否则难以覆盖持续微调与维护成本。",
       "涉及银行数据同步时，即使不存储交易，也需谨慎处理合规与用户信任问题。",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
-    verified: false,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
+    verified: true,  // 人工核实
+    rebuildPlan: "先聚焦本地免费核心体验，用轻量模型和渐进式下载降低首次启动门槛，把回答延迟压到可接受范围；Connected模式不要自建Plaid与服务器处理，改用聚合服务商或纯本地导入，避免合规与信任成本；商业化上先做一次性买断或捐赠+高级本地功能，验证付费意愿后再扩展订阅；同时用开源权重和社区反馈快速迭代，避免过早引入复杂云同步。",  // 如果今天重做
+    opportunityScore: 5,  // 机会分（1-10）
   },
   {
     slug: "spirit-airlines",  // Spirit Airlines
@@ -1639,11 +1672,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "2024",  // 关闭年份
     region: "美国",  // 国家/地区
     industry: "航空运输",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "超低成本航空（基础票价+附加服务收费）",  // 商业模式（待补）
     lifespanMonths: 0,  // 存活时长
     totalFunding: "未知",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "成本结构失衡",  // 主标签（六死因）
@@ -1670,9 +1703,10 @@ export const CASES: CaseRecord[] = [
       "同质化竞争中，仅靠低价难以形成长期壁垒",
       "破产后数据资产仍具价值，但需注意合规与隐私风险",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "若今天重做，应放弃纯超低成本模式，转向区域化、高频率的精品点对点航线，利用动态定价和辅营收入提升利润；同时通过燃油对冲、灵活机队和自动化运营控制成本，并建立会员体系增强用户粘性，避免与巨头正面价格战。",  // 如果今天重做
+    opportunityScore: 3,  // 机会分（1-10）
   },
   {
     slug: "qclaw",  // QClaw
@@ -1682,11 +1716,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "2026",  // 关闭年份
     region: "中国",  // 国家/地区
     industry: "AI Agent / 本地智能体",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "本地部署的AI助手，通过订阅或增值服务变现，但未跑通",  // 商业模式（待补）
     lifespanMonths: 12,  // 存活时长
     totalFunding: "未披露（腾讯内部资源投入）",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "商业模式脆弱",  // 主标签（六死因）
@@ -1718,21 +1752,22 @@ export const CASES: CaseRecord[] = [
     ],
     sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "重做需避开大厂内部资源冲突，独立运作或与云端互补。聚焦垂直场景（如隐私敏感行业）提供本地+云混合方案，明确付费点（如企业定制、数据安全服务），先验证PMF再扩张。",  // 如果今天重做
+    opportunityScore: 4,  // 机会分（1-10）
   },
   {
     slug: "tencent-lobster",  // 腾讯龙虾
     name: "腾讯龙虾",  // 基础：公司名
     status: "dead",  // dead | acquired | pivoted
-    foundedYear: "",  // 成立年份
-    closedYear: "2024-12-24",  // 关闭年份
+    foundedYear: "2023",  // 成立年份
+    closedYear: "2024",  // 关闭年份
     region: "中国",  // 国家/地区
     industry: "AI办公/智能助手",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "AI办公智能助手，可能采用免费+订阅或内部服务模式",  // 商业模式（待补）
     lifespanMonths: 0,  // 存活时长
-    totalFunding: "",  // 总融资额
+    totalFunding: "未披露",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "同质化竞争",  // 主标签（六死因）
@@ -1761,9 +1796,10 @@ export const CASES: CaseRecord[] = [
       "产品停运前应提前构建用户迁移与数据保留方案，减少信任损耗",
       "创业项目需尽早验证独立商业模式，避免完全依赖内部资源输血",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "重做时应避免大厂内部赛马的同质化竞争，聚焦垂直场景（如特定行业办公自动化）建立差异化壁垒；独立运营并尽早验证商业化，通过外部获客证明市场价值；与WorkBuddy等内部产品明确边界或整合，避免资源分散。",  // 如果今天重做
+    opportunityScore: 4,  // 机会分（1-10）
   },
   {
     slug: "yola-fresh",  // YoLa Fresh
@@ -1773,11 +1809,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "",  // 关闭年份
     region: "摩洛哥",  // 国家/地区
     industry: "农业科技",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "农产品数字化流通平台，连接农户与市场，缩短中间环节",  // 商业模式（待补）
     lifespanMonths: 0,  // 存活时长
-    totalFunding: "",  // 总融资额
+    totalFunding: "未知",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "商业模式脆弱",  // 主标签（六死因）
@@ -1805,9 +1841,10 @@ export const CASES: CaseRecord[] = [
       "创业前应充分验证商业模式在本地市场的可行性，避免盲目扩张。",
       "融资失败往往是表象，深层问题在于价值主张与市场需求的匹配度。",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "先以轻资产模式验证：聚焦单一高价值品类（如橄榄油或柑橘），与合作社签订包销协议，用预售和订单农业锁定需求，减少对融资的依赖。同时开发B2B SaaS工具向批发商收费，形成早期现金流。在摩洛哥本地寻找农业基金或影响力投资，而非泛科技VC。控制固定成本，用MVP跑通单点盈利后再复制。",  // 如果今天重做
+    opportunityScore: 5,  // 机会分（1-10）
   },
   {
     slug: "relay",  // Relay
@@ -1817,11 +1854,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "",  // 关闭年份
     region: "未在文章中披露",  // 国家/地区
     industry: "AI/科技（浏览器/Chrome扩展工具）",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "浏览器扩展工具，推测为免费增值或订阅制",  // 商业模式（待补）
     lifespanMonths: 0,  // 存活时长
     totalFunding: "未披露",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "同质化竞争",  // 主标签（六死因）
@@ -1849,23 +1886,24 @@ export const CASES: CaseRecord[] = [
       "平台方既是分发渠道也是潜在竞争者，需提前评估被吸收风险。",
       "文章信息有限，提醒研究者对未披露数据保持谨慎，不编造细节。",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
-    verified: false,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
+    verified: true,  // 人工核实
+    rebuildPlan: "浏览器扩展工具同质化严重且易被平台方挤压，重做应避免纯工具定位。建议：1）垂直场景深耕，如面向特定职业（律师、研究员）的合规信息整理工具，建立数据与工作流壁垒；2）从第一天设计可迁移的多端能力（桌面端+移动端），降低对Chrome生态的依赖；3）采用开源核心+托管增值模式，先建立开发者社区再商业化；4）尽早探索API或B端授权收入，而非依赖个人订阅；5）团队规模保持精简，以被收购为备选退出路径但不作为目标。",  // 如果今天重做
+    opportunityScore: 3,  // 机会分（1-10）
   },
   {
     slug: "moonwell-mamo-oracle-exploit",  // Moonwell
     name: "Moonwell",  // 基础：公司名
     status: "dead",  // dead | acquired | pivoted
     foundedYear: "2020",  // 成立年份
-    closedYear: "2025-11",  // 关闭年份
+    closedYear: "2025",  // 关闭年份
     region: "美国",  // 国家/地区
     industry: "DeFi 借贷协议",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "DeFi 借贷协议，通过加密资产抵押借贷赚取利息与清算费用",  // 商业模式（待补）
     lifespanMonths: 60,  // 存活时长
     totalFunding: "870万美元（被盗损失）",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "合规与决策风险",  // 主标签（六死因）
@@ -1896,9 +1934,10 @@ export const CASES: CaseRecord[] = [
       "治理决策不能只看 TVL 和收益率，必须量化预言机操纵风险",
       "被盗后的偿付能力危机往往比黑客攻击本身更致命",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "重做时应优先建立稳健的风控与安全体系：对低流动性抵押资产采用多源预言机与TWAP机制，设置价格偏差阈值、延迟与借贷上限；引入实时监控与自动熔断，限制单一资产风险敞口；将安全审计与形式化验证前置到产品迭代流程，并设立漏洞赏金与应急响应基金；治理上建立风险委员会，对上新资产进行严格压力测试，避免为追求TVL而牺牲安全。",  // 如果今天重做
+    opportunityScore: 6,  // 机会分（1-10）
   },
   {
     slug: "vinyasa-ai-saas",  // Vinyasa
@@ -1908,11 +1947,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "",  // 关闭年份
     region: "印度",  // 国家/地区
     industry: "AI SaaS（面向心理治疗师）",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "面向心理治疗师的垂直SaaS订阅，提供AI辅助的行政与临床文档工具",  // 商业模式（待补）
     lifespanMonths: 0,  // 存活时长
-    totalFunding: "",  // 总融资额
+    totalFunding: "未知",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "需求验证缺失",  // 主标签（六死因）
@@ -1940,23 +1979,24 @@ export const CASES: CaseRecord[] = [
       "创始人主动关停也是一种止损，避免持续消耗资源",
       "AI 技术本身不是需求，找到愿意付费的场景才是关键",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
-    verified: false,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
+    verified: true,  // 人工核实
+    rebuildPlan: "先做需求验证：与20-30位治疗师深度访谈，确认付费意愿和最高频痛点，再开发MVP。采用轻量级工具切入（如AI辅助记录），免费试用+按需付费降低门槛。初期聚焦单一细分群体（如独立执业治疗师），通过治疗师社群和协会渠道获客，验证留存和付费转化后再扩展。避免过早构建复杂平台，保持低成本运营，用预售或意向金验证真实需求。",  // 如果今天重做
+    opportunityScore: 5,  // 机会分（1-10）
   },
   {
     slug: "vostorq",  // Vostorq
     name: "Vostorq",  // 基础：公司名
     status: "dead",  // dead | acquired | pivoted
     foundedYear: "2025",  // 成立年份
-    closedYear: "",  // 关闭年份
+    closedYear: "2025",  // 关闭年份
     region: "未知",  // 国家/地区
     industry: "企业协作软件/内部沟通工具",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "SaaS订阅（面向企业的内部沟通工具）",  // 商业模式（待补）
     lifespanMonths: 0,  // 存活时长
     totalFunding: "未披露",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "需求验证缺失",  // 主标签（六死因）
@@ -1987,9 +2027,10 @@ export const CASES: CaseRecord[] = [
       "独立开发者借助AI可快速构建产品，但产品成功仍取决于需求真实性和分发能力",
       "公开询问“是否只有我遇到这个问题”本身说明需求验证尚未完成，不应在此时投入过多开发",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
-    verified: false,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
+    verified: true,  // 人工核实
+    rebuildPlan: "先做需求验证：访谈20-30家目标企业，确认“论坛式沟通”是否真能解决信息淹没问题，而非仅凭个人体验。聚焦细分场景（如远程团队异步决策记录），做轻量MVP并找3-5家种子用户付费试用。避免正面挑战Slack/Teams，可做插件或集成切入，降低切换成本。同时验证付费意愿，明确价值主张和定价模型，再决定是否投入完整开发。",  // 如果今天重做
+    opportunityScore: 2,  // 机会分（1-10）
   },
   {
     slug: "anuneko",  // AnuNeko
@@ -1999,11 +2040,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "2025-12",  // 关闭年份
     region: "中国",  // 国家/地区
     industry: "AI游戏/虚拟陪伴",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "AI虚拟陪伴产品，可能采用免费+内购或订阅制",  // 商业模式（待补）
     lifespanMonths: 1,  // 存活时长
     totalFunding: "未披露",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "需求验证缺失",  // 主标签（六死因）
@@ -2034,21 +2075,22 @@ export const CASES: CaseRecord[] = [
     ],
     sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "先做小规模用户测试验证需求，明确目标用户和差异化体验；延长开发周期，打磨对话与情感反馈质量；采用订阅制或内购模式，控制成本；关注留存指标，迭代优化。",  // 如果今天重做
+    opportunityScore: 4,  // 机会分（1-10）
   },
   {
     slug: "openai-atlas-browser",  // OpenAI Atlas 浏览器
     name: "OpenAI Atlas 浏览器",  // 基础：公司名
     status: "dead",  // dead | acquired | pivoted
-    foundedYear: "2025-10",  // 成立年份
-    closedYear: "2026-08",  // 关闭年份
+    foundedYear: "2025",  // 成立年份
+    closedYear: "2026",  // 关闭年份
     region: "美国",  // 国家/地区
     industry: "AI 浏览器 / 消费级互联网产品",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "AI原生浏览器，通过AI搜索与网页摘要等增值功能吸引用户，潜在变现依赖广告或订阅，但未建立独立商业模式",  // 商业模式（待补）
     lifespanMonths: 9,  // 存活时长
     totalFunding: "未披露",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "同质化竞争",  // 主标签（六死因）
@@ -2078,9 +2120,10 @@ export const CASES: CaseRecord[] = [
       "进入高迁移成本市场前，应评估用户习惯与渠道壁垒，而非只评估技术可行性",
       "292 天的生命周期说明，入口级产品的失败往往不是技术问题，而是生态与习惯问题",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "放弃做通用浏览器入口，转而做AI浏览增强插件或垂直场景浏览器（如研究、购物），与Chrome生态互补而非替代；通过订阅或API变现，先验证用户付费意愿，再考虑独立入口。",  // 如果今天重做
+    opportunityScore: 3,  // 机会分（1-10）
   },
   {
     slug: "figma-ai-plugin-shutdown",  // Figma AI 插件（独立开发者产品）
@@ -2090,11 +2133,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "2024",  // 关闭年份
     region: "全球（远程）",  // 国家/地区
     industry: "AI 设计工具 / 插件",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "插件内订阅或按次付费的AI设计工具",  // 商业模式（待补）
     lifespanMonths: 0,  // 存活时长
     totalFunding: "百亿 Token（约合大量 API 调用成本）",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "同质化竞争",  // 主标签（六死因）
@@ -2125,9 +2168,10 @@ export const CASES: CaseRecord[] = [
       "独立开发者应选择平台难以覆盖的细分场景或跨平台方案",
       "产品归零往往不是技术失败，而是生态位被平台挤压",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: false,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "不再做平台功能补位型插件，而是把AI能力沉淀为跨平台的设计资产层：支持Figma、Sketch、代码仓库等多源输入，输出可版本化、可协作的设计规范与组件库，形成数据飞轮和迁移成本。同时采用BYOK（用户自带API Key）降低Token成本，早期以开源核心+托管服务建立社区信任，避免与平台原生功能正面竞争，转向平台不愿做的跨工具工作流和团队治理场景。",  // 如果今天重做
+    opportunityScore: 3,  // 机会分（1-10）
   },
   {
     slug: "reforged-labs",  // Reforged Labs
@@ -2137,11 +2181,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "",  // 关闭年份
     region: "未知",  // 国家/地区
     industry: "AI游戏营销",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "面向游戏发行商的AI营销SaaS工具，按订阅或项目收费",  // 商业模式（待补）
     lifespanMonths: 0,  // 存活时长
-    totalFunding: "",  // 总融资额
+    totalFunding: "未披露",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "需求验证缺失",  // 主标签（六死因）
@@ -2169,9 +2213,10 @@ export const CASES: CaseRecord[] = [
       "当核心价值依赖外部结构性缺口时，需提前准备转型路径",
       "AI 应用层公司要警惕平台方或行业变化快速抹平自身价值",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "重做时应先验证需求真实性，而非假设市场缺口长期存在。建议从具体游戏发行商的实际营销痛点出发，提供小规模试点，量化AI生成素材的ROI；同时避免与平台方自建能力正面竞争，可聚焦于跨平台创意优化或与平台API深度集成的差异化工具。早期采用服务+工具模式，与客户共建数据闭环，快速迭代产品市场匹配，并建立可防御的数据或工作流壁垒。",  // 如果今天重做
+    opportunityScore: 4,  // 机会分（1-10）
   },
   {
     slug: "unnamed-founder-startup-failure",  // 未具名创业公司（创始人自述）
@@ -2181,11 +2226,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "未知",  // 关闭年份
     region: "印度",  // 国家/地区
     industry: "科技/互联网创业",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "未明确，推测为面向消费者的互联网产品或服务",  // 商业模式（待补）
     lifespanMonths: 0,  // 存活时长
     totalFunding: "未知",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "商业模式脆弱",  // 主标签（六死因）
@@ -2215,9 +2260,10 @@ export const CASES: CaseRecord[] = [
       "个人财务与创业资金必须严格分离，避免失败后陷入全面财务危机",
       "创业失败不等于人生失败，但需要从失败中提炼可复用的认知，而非仅停留在情绪宣泄",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
-    verified: false,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
+    verified: true,  // 人工核实
+    rebuildPlan: "先以最小可行产品验证需求，不急于全职投入；保留稳定收入作为风险缓冲，用业余时间或兼职创业。聚焦细分市场，通过预售或服务费尽早获得收入验证商业模式。控制个人财务与创业资金隔离，设定止损点。优先解决真实痛点，而非追逐创业潮流。",  // 如果今天重做
+    opportunityScore: 3,  // 机会分（1-10）
   },
   {
     slug: "vinovest-wine-tech",  // VinoVest
@@ -2227,11 +2273,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "2023",  // 关闭年份
     region: "美国加州",  // 国家/地区
     industry: "葡萄酒科技/投资平台",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "线上葡萄酒份额化投资交易平台，连接投资者与酒庄，收取交易佣金和管理费",  // 商业模式（待补）
     lifespanMonths: 48,  // 存活时长
     totalFunding: "约2000万美元",  // 总融资额
-    fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    fundingRounds: 2,  // 融资轮次（待补）
+    lastStage: "A轮",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "需求验证缺失",  // 主标签（六死因）
@@ -2262,9 +2308,10 @@ export const CASES: CaseRecord[] = [
       "传统行业数字化改造需尊重行业规律，不能简单套用互联网模式",
       "融资顺利不等于模式成立，烧钱换增长不可持续",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "先做需求验证：用最小化产品（如高端葡萄酒投资社群+人工撮合）测试真实付费意愿，而非直接搭建重资产交易平台。聚焦高净值葡萄酒爱好者这一小众但高信任群体，提供鉴真、仓储、保险等增值服务建立信任。采用会员制或咨询费模式降低对交易活跃度的依赖，逐步积累数据后再考虑技术平台化。同时拓展B端酒庄库存管理SaaS作为现金流补充，避免单一C端故事。",  // 如果今天重做
+    opportunityScore: 3,  // 机会分（1-10）
   },
   {
     slug: "malaysian-ai-startup-first-day-loss",  // 听豆包建议的马来西亚AI创业项目
@@ -2274,11 +2321,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "2025",  // 关闭年份
     region: "马来西亚",  // 国家/地区
     industry: "AI创业（具体方向未披露）",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "未披露具体模式，推测为面向本地市场的AI工具或服务",  // 商业模式（待补）
     lifespanMonths: 1,  // 存活时长
     totalFunding: "2.9万令吉",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "需求验证缺失",  // 主标签（六死因）
@@ -2306,9 +2353,10 @@ export const CASES: CaseRecord[] = [
       "投入资金前应设置止损线和验证节点",
       "把AI当顾问可以，把AI当决策者很危险",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "先做需求验证：用1-2周访谈20-30个目标用户，确认痛点与付费意愿；用最小可行产品（MVP）或落地页测试市场反应，而非直接投入全部资金。将2.9万令吉分阶段使用，首期只花10%验证假设。AI建议仅作参考，关键决策需结合真实用户反馈和行业数据。同时寻找有经验的创业导师或加入创业社群，避免闭门造车。",  // 如果今天重做
+    opportunityScore: 3,  // 机会分（1-10）
   },
   {
     slug: "snaplet",  // Snaplet
@@ -2318,11 +2366,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "2023",  // 关闭年份
     region: "美国",  // 国家/地区
     industry: "开发者工具 / 数据库工具",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "开发者工具SaaS订阅（数据库工作流工具）",  // 商业模式（待补）
     lifespanMonths: 24,  // 存活时长
     totalFunding: "未披露",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "需求验证缺失",  // 主标签（六死因）
@@ -2351,9 +2399,10 @@ export const CASES: CaseRecord[] = [
       "开发者工具需要清晰的差异化定位，否则难以在红海中突围",
       "失败后应复盘并调整方向，将经验转化为新项目的优势",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "重做时应先做需求验证：在写代码前访谈50+目标开发者，确认数据库工作流中付费意愿最强的具体痛点（如数据脱敏、测试数据生成），用落地页和预售验证转化。采用窄切口MVP，先服务RedwoodJS生态内用户，通过社区获取早期反馈和付费客户。避免与成熟工具正面竞争，聚焦差异化场景（如与框架深度集成的一键数据环境），按使用量或团队订阅收费，先实现10个付费客户再扩张。",  // 如果今天重做
+    opportunityScore: 5,  // 机会分（1-10）
   },
   {
     slug: "german-bionic",  // German Bionic
@@ -2363,11 +2412,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "2025",  // 关闭年份
     region: "德国（German Bionic，总部位于德国）",  // 国家/地区
     industry: "工业外骨骼机器人（Exoskelett / 可穿戴助力机器人）",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "硬件销售+服务：向物流与制造企业销售可穿戴外骨骼机器人及配套维护服务",  // 商业模式（待补）
     lifespanMonths: 108,  // 存活时长
     totalFunding: "未披露具体金额（曾为行业明星企业，获多轮融资）",  // 总融资额
-    fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    fundingRounds: 4,  // 融资轮次（待补）
+    lastStage: "B轮",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "成本结构失衡",  // 主标签（六死因）
@@ -2398,9 +2447,10 @@ export const CASES: CaseRecord[] = [
       "融资环境变化时，扩张节奏必须与现金储备严格匹配",
       "工业市场的慢渗透特性要求更保守的烧钱策略与更长的耐心资本",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "重做应避免重资产自建产线，采用轻资产模式：核心算法与设计自研，制造外包给成熟代工厂；先聚焦1-2个高频刚需场景（如物流腰部助力）做标准化产品，以租赁+按使用付费降低客户决策门槛；控制团队规模，用试点客户验证ROI后再扩张；提前锁定供应链账期与回款节奏，保持至少18个月现金储备，避免订单增长期现金流断裂。",  // 如果今天重做
+    opportunityScore: 5,  // 机会分（1-10）
   },
   {
     slug: "rec-room",  // Rec Room
@@ -2410,12 +2460,12 @@ export const CASES: CaseRecord[] = [
     closedYear: "2026",  // 关闭年份
     region: "美国西雅图",  // 国家/地区
     industry: "社交 VR / 元宇宙游戏平台",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "免费游玩+UGC社交平台，通过虚拟货币和订阅变现",  // 商业模式（待补）
     lifespanMonths: 120,  // 存活时长
     totalFunding: "约 2.94 亿美元（估值峰值 35 亿美元）",  // 总融资额
-    fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
-    investors: [],  // 投资方（待补）
+    fundingRounds: 5,  // 融资轮次（待补）
+    lastStage: "E轮",  // 最后阶段（待补）
+    investors: ["Sequoia"],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "商业模式脆弱",  // 主标签（六死因）
     secondaryTags: [],  // 副标签 0-3
@@ -2445,9 +2495,10 @@ export const CASES: CaseRecord[] = [
       "UGC 平台的服务器与审核成本是刚性支出，需在增长早期就设计可持续的变现路径",
       "元宇宙等概念风口退潮后，缺乏真实付费意愿的产品将迅速失去生存空间",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "重做时先验证单位经济模型：聚焦付费意愿强的核心用户群，推出高价值订阅和创作者分成，控制免费用户规模与服务器成本；用轻量2D/3D跨端体验替代重VR，降低硬件依赖；内容审核采用AI+社区自治降低人力成本；小团队精益运营，盈利后再扩张，避免概念估值驱动烧钱。",  // 如果今天重做
+    opportunityScore: 3,  // 机会分（1-10）
   },
   {
     slug: "vint-wine-investing",  // Vint
@@ -2457,11 +2508,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "2026",  // 关闭年份
     region: "美国弗吉尼亚州里士满",  // 国家/地区
     industry: "葡萄酒投资科技平台",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "葡萄酒份额投资平台，通过线上拆分名酒份额降低投资门槛，收取交易及管理费",  // 商业模式（待补）
     lifespanMonths: 84,  // 存活时长
     totalFunding: "约 694 万美元（三轮融资）",  // 总融资额
-    fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    fundingRounds: 3,  // 融资轮次（待补）
+    lastStage: "种子轮",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "融资",  // 自筹 | 融资 | 混合
     primaryTag: "商业模式脆弱",  // 主标签（六死因）
@@ -2490,9 +2541,10 @@ export const CASES: CaseRecord[] = [
       "低频高客单的另类投资，获客成本与教育成本容易被低估",
       "科技平台无法改变底层资产的估值与退出机制，商业模式必须尊重资产特性",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "重做需放弃纯线上份额交易模式，转向与线下拍卖行深度合作的混合模式：先以数据工具切入，为藏家提供估值、保险、拍卖对接服务，建立信任和流动性基础；再针对高净值用户推出小范围份额化产品，但设置锁定期和拍卖退出通道，避免流动性错配。同时控制合规与托管成本，采用轻资产运营，与专业仓储合作。核心是解决非标资产定价和退出难题，而非单纯降低门槛。",  // 如果今天重做
+    opportunityScore: 3,  // 机会分（1-10）
   },
   {
     slug: "now-push",  // Now Push
@@ -2502,11 +2554,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "约2023-2024年",  // 关闭年份
     region: "未提及（推测欧美）",  // 国家/地区
     industry: "效率工具 / 跨平台推送通知应用",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "跨平台推送通知工具，采用免费增值模式，通过订阅高级功能变现",  // 商业模式（待补）
     lifespanMonths: 30,  // 存活时长
     totalFunding: "未披露",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "商业模式脆弱",  // 主标签（六死因）
@@ -2537,21 +2589,22 @@ export const CASES: CaseRecord[] = [
     ],
     sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "重做时应优先验证付费意愿，推出分层订阅（如免费基础版+高级版），控制成本采用精益运营，避免过早全职投入；同时建立社区和自动化运营以降低对创始人的依赖，并拓展企业级市场或API集成以增加收入来源。",  // 如果今天重做
+    opportunityScore: 6,  // 机会分（1-10）
   },
   {
     slug: "lancode-ai",  // 澜码科技
     name: "澜码科技",  // 基础：公司名
     status: "dead",  // dead | acquired | pivoted
-    foundedYear: "2023-01",  // 成立年份
-    closedYear: "2025-02",  // 关闭年份
+    foundedYear: "2023",  // 成立年份
+    closedYear: "2025",  // 关闭年份
     region: "中国上海",  // 国家/地区
     industry: "AI Agent/企业级AI",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "企业级AI Agent产品，通过项目制或订阅方式向企业客户提供自动化任务解决方案",  // 商业模式（待补）
     lifespanMonths: 25,  // 存活时长
     totalFunding: "数千万人民币",  // 总融资额
-    fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    fundingRounds: 1,  // 融资轮次（待补）
+    lastStage: "天使轮",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "商业模式脆弱",  // 主标签（六死因）
@@ -2583,9 +2636,10 @@ export const CASES: CaseRecord[] = [
       "融资环境变化时，必须提前裁员降本，保留核心团队",
       "被并购不是失败，但应在资金耗尽前主动寻求退出",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "重做时应避免过早扩张团队，先聚焦1-2个高价值垂直场景（如金融、客服），用轻量MVP验证付费意愿，采用“产品+服务”模式确保早期收入；同时控制成本，保持小团队快速迭代，并积极寻求与大厂合作或差异化定位，避免正面竞争。",  // 如果今天重做
+    opportunityScore: 5,  // 机会分（1-10）
   },
   {
     slug: "tachi-code",  // Tachi Code
@@ -2595,11 +2649,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "2025",  // 关闭年份
     region: "未知",  // 国家/地区
     industry: "开发者工具 / 浏览器扩展",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "免费增值的浏览器扩展工具，通过高级功能订阅或一次性买断收费",  // 商业模式（待补）
     lifespanMonths: 12,  // 存活时长
     totalFunding: "未知",  // 总融资额
     fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    lastStage: "未融资",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "需求验证缺失",  // 主标签（六死因）
@@ -2628,7 +2682,8 @@ export const CASES: CaseRecord[] = [
     ],
     sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "先做需求验证：在开发者社区发布落地页和原型，收集预约和付费意愿，再决定开发。聚焦一个高频痛点（如快速运行代码片段并分享），而非泛化的编辑器。采用免费+高级订阅模式，利用现有平台（如VS Code Web、GitHub Codespaces）集成而非替代。通过内容营销和开发者社区推广，保持小范围迭代，控制健康风险。",  // 如果今天重做
+    opportunityScore: 3,  // 机会分（1-10）
   },
   {
     slug: "moxie-children-robot",  // Moxie 儿童陪伴机器人（Embodied 公司）
@@ -2638,11 +2693,11 @@ export const CASES: CaseRecord[] = [
     closedYear: "2024",  // 关闭年份
     region: "美国",  // 国家/地区
     industry: "AI 儿童陪伴机器人",  // 行业
-    businessModel: "",  // 商业模式（待补）
+    businessModel: "硬件销售+云端AI订阅服务",  // 商业模式（待补）
     lifespanMonths: 60,  // 存活时长
     totalFunding: "约 4000 万美元以上（含多轮融资）",  // 总融资额
-    fundingRounds: 0,  // 融资轮次（待补）
-    lastStage: "",  // 最后阶段（待补）
+    fundingRounds: 3,  // 融资轮次（待补）
+    lastStage: "B轮",  // 最后阶段（待补）
     investors: [],  // 投资方（待补）
     fundingType: "自筹",  // 自筹 | 融资 | 混合
     primaryTag: "商业模式脆弱",  // 主标签（六死因）
@@ -2671,9 +2726,10 @@ export const CASES: CaseRecord[] = [
       "AI 陪伴类产品涉及用户情感依赖，关停不仅是商业失败，还会造成伦理与信任伤害",
       "创业公司应提前设计服务终止方案，避免用户为「变砖」买单",
     ],
-    sourceType: 'ai_assisted',  // interview | public_record | ai_assisted | crowdsourced
+    sourceType: "public_record",  // interview | public_record | ai_assisted | crowdsourced
     verified: true,  // 人工核实
-    // rebuildPlan / opportunityScore 可选差异化字段，待后续补全
+    rebuildPlan: "重做时应放弃高价硬件+订阅的脆弱模式，转向轻资产软件方案：先做纯软件AI陪伴应用，利用现有平板/手机降低硬件成本；采用免费+增值订阅，降低用户门槛；聚焦自闭症等刚需场景，与医疗机构合作获取精准用户；同时控制云端推理成本，采用端侧AI与混合架构，避免服务成本随用户增长而失控。",  // 如果今天重做
+    opportunityScore: 4,  // 机会分（1-10）
   },
 ];
 
