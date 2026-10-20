@@ -2819,6 +2819,7 @@ export const CASES: CaseRecord[] = [
     sourceType: "interview",
     verified: false,
     rebuildPlan: "若重做，应先以最小可行硬件验证单一场景需求，控制团队规模与烧钱速度，建立明确的工程里程碑与止损线，并保持创始人与一线工程师的高频直接沟通。",
+    opportunityScore: 4,  // 机会分（1-10）
   },
   {
     slug: "durham-robotics-startup-shutters",
@@ -2907,6 +2908,7 @@ export const CASES: CaseRecord[] = [
     ],
     sourceType: "public_record",
     verified: false,
+    opportunityScore: 3,  // 机会分（1-10）
     rebuildPlan: "若重做，应先只保留一个方向，用 4-6 周做低成本需求验证（真实付费意愿而非口头兴趣），设定明确的继续/放弃门槛；在验证通过前不组建团队、不租办公室，把资金留给验证后的规模化。第二个项目应等第一个项目进入稳定期或明确终止后再启动，避免现金流与注意力交叉污染。",
   },
   {

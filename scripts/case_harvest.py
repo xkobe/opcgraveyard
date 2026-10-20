@@ -641,9 +641,8 @@ def format_case_ts(rec):
     L.append(f"    verified: {'true' if rec.get('verified', True) else 'false'},")
     rebuild = str(rec.get("rebuildPlan", "") or "")
     score = int(rec.get("opportunityScore", 0) or 0)
-    if rebuild:
+    if rebuild or score > 0:
         L.append(f"    rebuildPlan: {ts_escape(rebuild)},")
-    if score > 0:
         L.append(f"    opportunityScore: {score},")
     L.append("  }")
     return "\n".join(L)
