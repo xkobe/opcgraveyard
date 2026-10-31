@@ -37,6 +37,7 @@ export const metadata: Metadata = {
 const NAV_ITEMS = [
   { href: '/', label: '首页' },
   { href: '/cases', label: '案例库' },
+  { href: '/duels', label: '同题对撞' },
   { href: '/contribute', label: '投稿' },
   { href: '/about', label: '关于' },
 ];

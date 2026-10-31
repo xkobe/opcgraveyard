@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { CASES, DEATH_CAUSES } from '@/data/cases';
+import { CASES, DEATH_CAUSES, getCaseBySlug, type CaseRecord } from '@/data/cases';
+import { DUELS, type CounterpartDuel } from '@/data/counterparts';
 import { CaseCard } from '@/components/case-card';
 import { SubscribeForm } from '@/components/subscribe-form';
 
@@ -27,6 +28,13 @@ export default function Home() {
     cause,
     count: CASES.filter((c) => c.primaryTag === cause.value).length,
   })).sort((a, b) => b.count - a.count);
+  // 同题对撞：前 3 组，配到对应墓碑
+  const duels = DUELS.slice(0, 3)
+    .map((duel) => ({ duel, dead: getCaseBySlug(duel.caseSlug) }))
+    .filter(
+      (d): d is { duel: CounterpartDuel; dead: CaseRecord } =>
+        d.dead !== undefined,
+    );
 
   return (
     <main>
@@ -192,6 +200,64 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* 同题对撞：同一个点子，有人活有人死 */}
+      {duels.length > 0 && (
+        <section className="border-b border-zinc-200/80 bg-white">
+          <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+            <div className="mb-5 flex items-baseline justify-between">
+              <div>
+                <h2 className="text-base font-semibold text-zinc-900">
+                  ⚔️ 同题对撞
+                </h2>
+                <p className="mt-1 text-xs text-zinc-500">
+                  同一个方向，一座墓碑 vs 一个还活着的赚钱项目
+                </p>
+              </div>
+              <Link
+                href="/duels"
+                className="text-xs font-medium text-zinc-600 hover:text-zinc-900"
+              >
+                全部对撞 →
+              </Link>
+            </div>
+            <div className="flex flex-col gap-4">
+              {duels.map(({ duel, dead }) => (
+                <div
+                  key={duel.caseSlug}
+                  className="grid gap-px overflow-hidden rounded-xl border border-zinc-200 bg-zinc-200 md:grid-cols-2"
+                >
+                  <div className="bg-zinc-50 p-4">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm">🪦</span>
+                      <span className="text-xs font-semibold text-zinc-900">
+                        {dead.name}
+                      </span>
+                      <span className="text-[10px] text-zinc-500">
+                        {duel.theme}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-[11px] text-zinc-500">
+                      死因：{dead.primaryTag} · 存活 {dead.lifespanMonths} 个月
+                    </p>
+                  </div>
+                  <div className="bg-emerald-50/60 p-4">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm">🟢</span>
+                      <span className="text-xs font-semibold text-emerald-900">
+                        {duel.alive[0]?.name}
+                      </span>
+                      <span className="text-[10px] text-emerald-700">
+                        {duel.alive[0]?.revenueNote}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* 订阅 CTA */}
       <section className="bg-white">

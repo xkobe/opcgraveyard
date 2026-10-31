@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { CASES, getCaseBySlug, getCauseMeta } from '@/data/cases';
+import { getDuelByCase } from '@/data/counterparts';
 import { cn } from '@/lib/utils';
 
 export function generateStaticParams() {
@@ -32,6 +33,7 @@ export default async function CaseDetailPage({
   if (!caseItem) notFound();
 
   const cause = getCauseMeta(caseItem.primaryTag);
+  const duel = getDuelByCase(caseItem.slug);
   const related = CASES.filter(
     (c) => c.slug !== caseItem.slug && c.primaryTag === caseItem.primaryTag,
   ).slice(0, 3);
@@ -206,6 +208,58 @@ export default async function CaseDetailPage({
             )}
           </div>
           <p className="text-sm leading-7 text-zinc-600">{caseItem.rebuildPlan}</p>
+        </section>
+      )}
+
+      {/* 同题对撞：同一方向，有人在活着 */}
+      {duel && (
+        <section className="mt-12 rounded-2xl border-2 border-dashed border-emerald-300 bg-emerald-50/50 p-6">
+          <div className="mb-2 flex items-center justify-between">
+            <h2 className="text-base font-semibold text-zinc-900">
+              ⚔️ 同题对撞：{duel.theme}
+            </h2>
+            <Link
+              href="/duels"
+              className="text-xs text-emerald-700 hover:text-emerald-900"
+            >
+              全部对撞 →
+            </Link>
+          </div>
+          <p className="mb-5 text-xs leading-6 text-zinc-500">
+            它死了，但同一个方向，有人还活着。活着的样本来自 Indie Hackers
+            社区与公开报道，是同一赛道里真实存活、真实赚钱的项目。
+          </p>
+          <div className="flex flex-col gap-4">
+            {duel.alive.map((alive) => (
+              <div
+                key={alive.name}
+                className="rounded-xl border border-emerald-200 bg-white p-5"
+              >
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-lg">🟢</span>
+                  <h3 className="text-sm font-bold text-zinc-900">{alive.name}</h3>
+                  <a
+                    href={alive.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-emerald-700 underline-offset-2 hover:underline"
+                  >
+                    {alive.url.replace(/^https?:\/\//, '')}
+                  </a>
+                </div>
+                <p className="mt-2 text-sm font-medium text-emerald-800">
+                  {alive.revenueNote}
+                </p>
+                <p className="mt-2 text-xs leading-6 text-zinc-600">
+                  {alive.modelNote}
+                </p>
+              </div>
+            ))}
+          </div>
+          <p className="mt-4 border-t border-emerald-200 pt-3 text-xs leading-6 text-zinc-700">
+            <span className="font-semibold">对照结论：</span>
+            {duel.takeaway}
+          </p>
         </section>
       )}
 
