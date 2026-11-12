@@ -27,6 +27,13 @@ from datetime import datetime, timedelta, timezone
 import requests
 from bs4 import BeautifulSoup
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+try:
+    import stale_tracker
+except Exception as _stale_err:  # 单文件运行时容错，不阻塞主流程
+    stale_tracker = None
+    print(f"[stale] 模块未加载: {_stale_err}", flush=True)
+
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CASES_FILE = os.path.join(PROJECT_ROOT, "src/data/cases.ts")
 REPORT_DIR = os.path.join(PROJECT_ROOT, "codeact", "output")
@@ -304,7 +311,7 @@ def cn_media_search(days):
 
 def search_all(since_days):
     tw = build_tw(since_days)
-    pools = {"gnews": [], "hn": [], "cn": []}
+    pools = {"gnews": [], "hn": [], "cn": [], "stale": []}
     seen = set()
 
     def add_dedup(pool, it):
@@ -343,18 +350,38 @@ def search_all(since_days):
             seen.add(u)
             pools["cn"].append(it)
 
-    # 三源交错合并，避免 fetch 阶段只取到单一来源
-    cands = []
-    i = j = k = 0
-    while i < len(pools["gnews"]) or j < len(pools["hn"]) or k < len(pools["cn"]):
-        if i < len(pools["gnews"]):
-            cands.append(pools["gnews"][i]); i += 1
-        if j < len(pools["hn"]):
-            cands.append(pools["hn"][j]); j += 1
-        if k < len(pools["cn"]):
-            cands.append(pools["cn"][k]); k += 1
+    # 4) 沉默死亡追踪（主动发现，不是新闻源）
+    #    前三源本质都是"等别人先把失败写成新闻"。但绝大多数一人公司是这样死的：
+    #    产品悄悄关站、域名到期不续、创始人默默去找工作，从头到尾没有一篇报道。
+    #    stale_tracker 用"时间闸门 + 存在性闸门"双闸门主动找这类项目：
+    #    闸门一 —— 项目至少 12 个月没有可观测活动；
+    #    闸门二 —— 域名 DNS 已 NXDOMAIN，或站点返回 404/410/持续 5xx。
+    #    只过闸门一（停更但还活着）不算死，不进候选。
+    if stale_tracker is not None and os.environ.get("ENABLE_STALE_TRACKER", "1") == "1":
+        try:
+            stale_items = stale_tracker.collect_stale_candidates()
+            for it in stale_items:
+                u = norm_url(it.get("url", ""))
+                if u and u not in seen:
+                    seen.add(u)
+                    pools["stale"].append(it)
+        except Exception as e:
+            log(f"[stale] 通道异常，跳过: {e}")
+    else:
+        log("[stale] 通道未启用")
 
-    log(f"[搜索] 候选: GNews={len(pools['gnews'])} HN={len(pools['hn'])} CN={len(pools['cn'])} 合计={len(cands)}")
+    # 四源交错合并，避免 fetch 阶段只取到单一来源
+    cands = []
+    order = ["gnews", "hn", "stale", "cn"]
+    idx = {k: 0 for k in order}
+    while any(idx[k] < len(pools[k]) for k in order):
+        for k in order:
+            if idx[k] < len(pools[k]):
+                cands.append(pools[k][idx[k]])
+                idx[k] += 1
+
+    log(f"[搜索] 候选: GNews={len(pools['gnews'])} HN={len(pools['hn'])} "
+        f"CN={len(pools['cn'])} Stale={len(pools['stale'])} 合计={len(cands)}")
     return cands
 
 

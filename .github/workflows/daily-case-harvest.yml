@@ -23,13 +23,18 @@ jobs:
           cache: 'pip'
 
       - name: Install dependencies
-        run: pip install -r scripts/requirements.txt
+        run: |
+          # dig 用于沉默死亡追踪的 DNS NXDOMAIN 判定（域名是否真的不存在）
+          sudo apt-get update -qq && sudo apt-get install -y -qq dnsutils
+          pip install -r scripts/requirements.txt
 
       - name: Run case harvest
         env:
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
           LLM_API_BASE: ${{ secrets.LLM_API_BASE }}
           LLM_MODEL: ${{ secrets.LLM_MODEL }}
+          # 沉默死亡追踪：主动发现"悄悄关站、域名到期不续"的项目
+          ENABLE_STALE_TRACKER: "1"
         run: python scripts/case_harvest.py 30 730
 
       - name: Verify cases file
@@ -48,6 +53,7 @@ jobs:
           git config user.name "opc-harvest-bot"
           git config user.email "opc-harvest-bot@users.noreply.github.com"
           git add src/data/cases.ts
+          [ -f scripts/stale_seen.json ] && git add scripts/stale_seen.json
           if git diff --cached --quiet; then
             echo "no changes"
           else
