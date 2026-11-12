@@ -107,6 +107,7 @@ export const FAILURE_CHAINS: FailureChain[] = [
       'NeuroPixel 做了四年时尚行业专用图像模型，服务 Myntra、Fabindia、Van Heusen、Decathlon，第二轮融资估值约 580 万美元。CEO 的原话是「我们在 2025 年底的某个夜晚被彻底碾压了」——Google 发布通用图像模型之后，专业模型的边际优势在几个月内蒸发。它死于现金断流，直接触发点是最大客户倒闭、拖欠超过六个月账款；但在此之前，护城河已经先消失了。',
       'Charlie Labs 的处境更直接：通用模型自己长出了它的产品能力。Phind 的流量被通用模型的原生搜索吸干。Figma 官方发布原生 AI 功能后，独立插件失去存在理由——用户不需要再安装什么。',
       'Saturn SQL 值得单独看：它的功能可以被「免费的 cron job 加 Python 脚本」完全替代。这不是被更强的对手打败，是被「足够用的免费方案」打败。',
+      'Ollie 选了一条看起来更聪明的路：以「数据不被滥用」作为差异化卖点，切进 AI 助手市场。但大厂的免费助手在功能上已经够用，隐私这一条不足以让人付费。Conductor 在 AI 编程这个最拥挤的赛道里被 Meta 收购，随后云服务宣布关停——赛道拥挤时，连退出方式都不由自己定。',
       '这条链有一个共同结构：护城河只有「我的效果更好」。而效果更好的保质期，取决于一个你控制不了的东西——通用模型下一次更新的时间。你跑得再快，也快不过别人发布会的日程表。',
     ],
     caseSlugs: [
@@ -117,6 +118,8 @@ export const FAILURE_CHAINS: FailureChain[] = [
       'saturn-sql',
       'liaoran-ai-t-shirt',
       'tome-ai-deck',
+      'ollie-privacy-ai-assistant',
+      'conductor-ai-coding',
     ],
   },
   {
@@ -151,6 +154,7 @@ export const FAILURE_CHAINS: FailureChain[] = [
       'Twice OPC Programmer 死于回款：外包是用时间换钱的模式，AI 改变不了回款结构。客户拖款就是你的现金流断点，而这跟你做得好不好无关。',
       'QClaw 和 Zupee Studio 是另一种：它们不是独立公司，是母公司的项目。腾讯「业务发展调整」、母公司「战略重心转向 AI」——这类决定的会议桌上没有你，也不需要你在场。',
       'CoreWeave 的案例把这件事讲得最清楚：客户集中度高，收入依赖少数几个 AI 公司的资本开支。分析师一旦质疑 AI 周期，股权价值就可能归零。它的死因不是技术，是别人的预算表。',
+      'Manus 是另一种形态：产品本身跑通了，融资约 7500 万美元，Meta 拟以约 20 亿美元收购——然后中国监管审查未通过，交易告吹，公司陷入去向不明。整条命运线由三方的议程共同决定，创始人在其中能做的选择很有限。',
       '这条链的共同点：命脉不在自己手里。而「不在自己手里」这件事，在做决定的那一刻通常看起来是优势——因为这意味着有人给你钱。',
     ],
     caseSlugs: [
@@ -160,6 +164,7 @@ export const FAILURE_CHAINS: FailureChain[] = [
       'coreweave-ai-cycle-stall',
       'qclaw',
       'zupee-studio-neoastro',
+      'manus-ai-agent',
     ],
   },
   {
@@ -238,6 +243,7 @@ export const FAILURE_CHAINS: FailureChain[] = [
       '80 Acres Farms 做室内种植：电费、设备折旧、人工都是刚性成本，而生菜香草的单价低、保质期短。它靠持续融资扩建产能来摊薄成本，但产能扩张同步放大亏损。',
       'German Bionic 的细节值得记住：申请破产时订单簿依然饱满——不是没有需求，是钱撑不到收入确认那一天。成本结构失衡可以杀死一个「有订单」的公司。',
       'Moxie 儿童机器人：硬件售价高但利润薄，依赖持续订阅和云端服务。融资一断，云端服务停，硬件变成一块砖。',
+      '丹佛那家集装箱垂直农场是同一个模板的另一个版本：可控环境农业的重资产投入高、能耗与运营成本难以摊薄，规模不带来单位成本的下降，只带来更大的绝对值。',
       '这条链不是「成本高」的问题，是「成本结构的方向」问题：固定成本先于收入建立，且边际成本不随规模下降。在这个方向上，努力扩张等于努力亏钱。',
     ],
     caseSlugs: [
@@ -247,6 +253,7 @@ export const FAILURE_CHAINS: FailureChain[] = [
       'moxie-children-robot',
       'arkeon',
       'german-bionic',
+      'farm-in-a-shipping-container-startup',
     ],
   },
 ];

@@ -44,10 +44,16 @@ export default function DataPage() {
   const verified = CASES.filter((c) => c.verified).length;
   const zeroLife = CASES.filter((c) => c.lifespanMonths === 0).length;
 
+  const industryValues = new Set(CASES.map((c) => c.industry));
+  const unknownRegion = CASES.filter(
+    (c) => !c.region.trim() || /未知|未披露|未提及/.test(c.region),
+  ).length;
+  const blankYear = CASES.filter((c) => !c.closedYear.trim()).length;
+
   const knownIssues = [
     {
       field: 'industry（行业）',
-      issue: `84 条案例里出现了 84 个不同的取值，没有做归一化。`,
+      issue: `${total} 条案例里出现了 ${industryValues.size} 个不同的 industry 取值，没有做归一化。`,
       impact:
         '所以本站不做任何「行业维度」的统计和排序。想做也做不了——归并方式是主观的，归并完的结论也就不可信。',
     },
@@ -61,20 +67,20 @@ export default function DataPage() {
     {
       field: 'region（地区）',
       issue:
-        '有 10 条是「未知」「未披露」「未提及（推测欧美）」或空白，另外还有「美国西雅图」「美国加州」这类和美国重复的写法。',
+        `有 ${unknownRegion} 条是「未知」「未披露」「未提及（推测欧美）」或空白，另外还有「美国西雅图」「美国加州」这类和美国重复的写法。`,
       impact:
         '地区统计只在粗粒度上做，且不把「未知」并入任何一档。',
     },
     {
       field: 'closedYear（关闭年份）',
       issue:
-        '格式不统一：有「2025」「2025-06」「约 2024 年」「未披露」「未知」和 14 条空白。',
+        `格式不统一：有「2025」「2025-06」「约 2024 年」「未披露」「未知」和 ${blankYear} 条空白。`,
       impact:
         '所以本站没有「逐年关闭数量」这张图。强行做会得到一个看起来精确、实际错误的曲线。',
     },
     {
       field: 'secondaryTags（副标签）',
-      issue: `34 条案例（占 ${Math.round((noSecondary / total) * 100)}%）没有副标签，其余有 1–3 个。而且副标签的语义层级和主标签不同——主标签是「死于什么」，副标签多半是「最后以什么形式结束」（资金断裂、团队解散、收购后关停）。`,
+      issue: `${noSecondary} 条案例（占 ${Math.round((noSecondary / total) * 100)}%）没有副标签，其余有 1–3 个。而且副标签的语义层级和主标签不同——主标签是「死于什么」，副标签多半是「最后以什么形式结束」（资金断裂、团队解散、收购后关停）。`,
       impact:
         '两者不能相加，也不能互相当作因果。本站的死因分布只用主标签。',
     },
