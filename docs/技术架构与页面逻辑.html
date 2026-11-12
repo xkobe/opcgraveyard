@@ -1,0 +1,1264 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>一人公司坟场 · 技术架构与页面逻辑</title>
+<style>
+  :root{
+    --paper:#f7f6f3;
+    --paper-2:#fffefb;
+    --ink:#1b1c19;
+    --ink-2:#4a4c46;
+    --ink-3:#77796f;
+    --line:#ded9d0;
+    --line-2:#ebe7df;
+    --moss:#2f5d47;
+    --moss-soft:#e7efe9;
+    --brick:#9c4530;
+    --brick-soft:#f6e9e4;
+    --slate:#2b3a34;
+    --code-bg:#1e211f;
+    --code-ink:#dfe3dc;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei","Source Han Sans SC",sans-serif;
+    --step:clamp(1rem,0.6rem + 1.6vw,1.35rem);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-size:15.5px;
+    line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+    overflow-wrap:break-word;
+  }
+  a{color:var(--moss);text-decoration-thickness:1px;text-underline-offset:2px}
+  a:focus-visible,summary:focus-visible{outline:2px solid var(--moss);outline-offset:2px;border-radius:2px}
+
+  /* ── 布局 ── */
+  .shell{display:grid;grid-template-columns:1fr;max-width:1400px;margin:0 auto}
+  @media(min-width:1000px){
+    .shell{grid-template-columns:250px minmax(0,1fr);gap:0}
+  }
+  .toc{
+    border-bottom:1px solid var(--line);
+    background:var(--paper);
+    padding:0;
+  }
+  @media(min-width:1000px){
+    .toc{
+      border-bottom:none;border-right:1px solid var(--line);
+      position:sticky;top:0;height:100vh;overflow-y:auto;
+      padding:32px 22px 60px 28px;
+    }
+  }
+  .toc-inner{padding:18px 20px 22px}
+  @media(min-width:1000px){.toc-inner{padding:0}}
+  .toc h2{
+    font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--ink-3);font-weight:600;margin:0 0 12px;
+  }
+  .toc ul{list-style:none;margin:0;padding:0;font-size:13.5px}
+  .toc li{margin:0}
+  .toc a{
+    display:block;padding:4px 0;color:var(--ink-2);text-decoration:none;
+    line-height:1.45;
+  }
+  .toc a:hover{color:var(--moss)}
+  .toc li.l1 > a{font-weight:600;color:var(--ink);margin-top:10px}
+  .toc li.l2 > a{padding-left:13px;font-size:12.8px;border-left:1px solid var(--line-2)}
+
+  main{padding:0 0 80px;min-width:0}
+  .wrap{padding:0 22px}
+  @media(min-width:720px){.wrap{padding:0 44px}}
+  @media(min-width:1000px){.wrap{padding:0 56px}}
+
+  /* ── 头部 ── */
+  .masthead{padding:52px 0 30px;border-bottom:1px solid var(--line)}
+  .eyebrow{
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;
+    color:var(--moss);text-transform:uppercase;margin:0 0 14px;
+  }
+  h1{
+    font-size:clamp(1.75rem,1.1rem + 2.4vw,2.6rem);
+    line-height:1.22;margin:0 0 16px;font-weight:700;letter-spacing:-.01em;
+  }
+  .standfirst{
+    font-size:clamp(1rem,.92rem + .35vw,1.12rem);
+    color:var(--ink-2);max-width:46em;margin:0 0 22px;
+  }
+  .meta-line{
+    font-family:var(--mono);font-size:12px;color:var(--ink-3);
+    display:flex;flex-wrap:wrap;gap:6px 18px;margin:0;
+  }
+
+  /* ── 首屏事实条 ── */
+  .facts{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:1px;
+    background:var(--line);border:1px solid var(--line);
+    margin:26px 0 0;
+  }
+  @media(min-width:700px){.facts{grid-template-columns:repeat(4,1fr)}}
+  .fact{background:var(--paper-2);padding:16px 16px 14px}
+  .fact b{
+    display:block;font-family:var(--mono);font-size:26px;line-height:1.1;
+    font-weight:600;color:var(--moss);letter-spacing:-.02em;
+  }
+  .fact span{display:block;font-size:12px;color:var(--ink-3);margin-top:6px}
+
+  /* ── 章节 ── */
+  section.chapter{padding-top:52px;scroll-margin-top:20px}
+  .chapter-head{display:flex;gap:14px;align-items:baseline;border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:26px}
+  .num{
+    font-family:var(--mono);font-size:13px;font-weight:600;color:var(--moss);
+    letter-spacing:.06em;flex:none;padding-top:4px;
+  }
+  h2.ch{font-size:var(--step);margin:0;font-weight:700;letter-spacing:-.01em;line-height:1.3}
+  h3{
+    font-size:1.02rem;font-weight:700;margin:38px 0 12px;
+    padding-bottom:6px;border-bottom:1px solid var(--line-2);
+    scroll-margin-top:20px;
+  }
+  h4{font-size:.95rem;font-weight:700;margin:24px 0 8px;color:var(--ink)}
+  p{margin:0 0 14px;max-width:52em}
+  ul,ol{margin:0 0 16px;padding-left:1.35em;max-width:52em}
+  li{margin:0 0 6px}
+  li > ul,li > ol{margin-top:6px}
+  strong{font-weight:600}
+  code{
+    font-family:var(--mono);font-size:.875em;
+    background:#eceae4;padding:1px 5px;border-radius:3px;
+    color:#33352f;
+  }
+  pre{
+    background:var(--code-bg);color:var(--code-ink);
+    padding:16px 18px;border-radius:6px;overflow-x:auto;
+    font-family:var(--mono);font-size:12.8px;line-height:1.65;
+    margin:0 0 18px;
+  }
+  pre code{background:none;padding:0;color:inherit;font-size:inherit}
+  pre .c{color:#8b948a}
+
+  /* ── 表格 ── */
+  .tscroll{overflow-x:auto;margin:0 0 20px;border:1px solid var(--line);border-radius:6px;background:var(--paper-2)}
+  table{border-collapse:collapse;width:100%;font-size:13.6px;min-width:520px}
+  caption{
+    caption-side:top;text-align:left;font-size:12px;color:var(--ink-3);
+    padding:10px 14px;border-bottom:1px solid var(--line-2);font-family:var(--mono);
+  }
+  th,td{text-align:left;padding:9px 14px;border-bottom:1px solid var(--line-2);vertical-align:top}
+  thead th{background:#f1eee7;font-weight:600;font-size:12.5px;color:var(--ink-2);white-space:nowrap}
+  tbody tr:last-child td{border-bottom:none}
+  td code{white-space:nowrap}
+  .num-col{text-align:right;font-family:var(--mono);white-space:nowrap}
+
+  /* ── 提示块 ── */
+  .note{
+    border-left:3px solid var(--moss);background:var(--moss-soft);
+    padding:14px 18px;margin:0 0 20px;font-size:14px;
+  }
+  .note.warn{border-left-color:var(--brick);background:var(--brick-soft)}
+  .note p:last-child{margin-bottom:0}
+  .note .lbl{
+    display:block;font-family:var(--mono);font-size:11px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--moss);margin-bottom:6px;font-weight:600;
+  }
+  .note.warn .lbl{color:var(--brick)}
+
+  /* ── 流水线图 ── */
+  .pipeline{
+    display:grid;gap:0;margin:0 0 26px;border:1px solid var(--line);
+    background:var(--paper-2);border-radius:6px;overflow:hidden;
+  }
+  .pstep{
+    padding:16px 18px;border-bottom:1px solid var(--line-2);
+    display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 12px;align-items:baseline;
+  }
+  .pstep:last-child{border-bottom:none}
+  .pstep .tag{
+    font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:#fff;
+    background:var(--slate);padding:2px 7px;border-radius:3px;white-space:nowrap;
+    justify-self:start;
+  }
+  .pstep.hl .tag{background:var(--moss)}
+  .pstep .ttl{font-weight:600;font-size:14px;min-width:0}
+  .pstep .dsc{grid-column:1 / -1;font-size:13px;color:var(--ink-2);line-height:1.6}
+  @media(min-width:820px){
+    .pipeline{grid-auto-flow:column;grid-auto-columns:1fr}
+    .pstep{border-bottom:none;border-right:1px solid var(--line-2);gap:10px 10px;align-content:start}
+    .pstep:last-child{border-right:none}
+    .pstep .ttl{font-size:13.5px}
+  }
+
+  /* ── 路由卡片 ── */
+  .routes{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden;margin:0 0 22px}
+  @media(min-width:760px){.routes{grid-template-columns:1fr 1fr}}
+  .route{background:var(--paper-2);padding:14px 16px}
+  .route .path{font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--moss)}
+  .route .what{font-size:13px;color:var(--ink-2);margin-top:4px;line-height:1.55}
+  .route .mode{
+    display:inline-block;font-family:var(--mono);font-size:10.5px;
+    border:1px solid var(--line);border-radius:3px;padding:0 5px;margin-left:8px;
+    color:var(--ink-3);vertical-align:1px;
+  }
+  .route .mode.cli{border-color:#c9b8a8;color:#8a6a4d}
+
+  /* ── 字段表分组 ── */
+  .grp{
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;
+    color:var(--ink-3);text-transform:uppercase;margin:22px 0 8px;
+  }
+
+  /* ── 页脚 ── */
+  footer{
+    border-top:1px solid var(--line);margin-top:64px;padding:26px 0 0;
+    font-size:12.5px;color:var(--ink-3);font-family:var(--mono);
+  }
+
+  /* ── 打印 ── */
+  @media print{
+    :root{--paper:#fff;--paper-2:#fff}
+    .toc{display:none}
+    .shell{display:block;max-width:none}
+    main{padding:0}
+    .wrap{padding:0}
+    body{font-size:10.5pt;line-height:1.55}
+    pre{background:#f2f2f2;color:#111;border:1px solid #ccc}
+    pre code{color:#111}
+    .tscroll{overflow:visible;border-color:#bbb}
+    table{min-width:0;font-size:9pt}
+    section.chapter{page-break-inside:auto;padding-top:22px}
+    .chapter-head{page-break-after:avoid}
+    h3,h4{page-break-after:avoid}
+    .note,.pipeline,.routes{page-break-inside:avoid}
+    a{color:#111;text-decoration:underline}
+    a[href^="http"]::after{content:" (" attr(href) ")";font-size:8pt;color:#555;word-break:break-all}
+  }
+  @media(prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    *{transition:none !important;animation:none !important}
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+<nav class="toc" aria-label="文档目录">
+  <div class="toc-inner">
+    <h2>目录</h2>
+    <ul>
+      <li class="l1"><a href="#s0">一句话说清这个项目</a></li>
+      <li class="l1"><a href="#s1">一、技术架构</a></li>
+      <li class="l2"><a href="#s1-1">1.1 技术栈</a></li>
+      <li class="l2"><a href="#s1-2">1.2 三层结构</a></li>
+      <li class="l2"><a href="#s1-3">1.3 目录结构</a></li>
+      <li class="l2"><a href="#s1-4">1.4 /tmp 镜像机制</a></li>
+      <li class="l2"><a href="#s1-5">1.5 三套脚本分工</a></li>
+      <li class="l2"><a href="#s1-6">1.6 部署形态</a></li>
+      <li class="l1"><a href="#s2">二、页面逻辑</a></li>
+      <li class="l2"><a href="#s2-0">2.0 路由总表</a></li>
+      <li class="l2"><a href="#s2-1">2.1 全局壳</a></li>
+      <li class="l2"><a href="#s2-2">2.2 首页</a></li>
+      <li class="l2"><a href="#s2-3">2.3 案例库</a></li>
+      <li class="l2"><a href="#s2-4">2.4 案例详情</a></li>
+      <li class="l2"><a href="#s2-5">2.5 死因传导</a></li>
+      <li class="l2"><a href="#s2-6">2.6 情境对照</a></li>
+      <li class="l2"><a href="#s2-7">2.7 同题对撞</a></li>
+      <li class="l2"><a href="#s2-8">2.8 数据口径</a></li>
+      <li class="l2"><a href="#s2-9">2.9 投稿</a></li>
+      <li class="l2"><a href="#s2-10">2.10 关于</a></li>
+      <li class="l1"><a href="#s3">三、数据模型</a></li>
+      <li class="l2"><a href="#s3-1">3.1 CaseRecord 30 字段</a></li>
+      <li class="l2"><a href="#s3-2">3.2 四个数据文件</a></li>
+      <li class="l2"><a href="#s3-3">3.3 标签体系</a></li>
+      <li class="l1"><a href="#s4">四、数据更新逻辑</a></li>
+      <li class="l2"><a href="#s4-1">4.1 全景</a></li>
+      <li class="l2"><a href="#s4-2">4.2 定时任务</a></li>
+      <li class="l2"><a href="#s4-3">4.3 四源采集</a></li>
+      <li class="l2"><a href="#s4-4">4.4 抓取与 LLM 抽取</a></li>
+      <li class="l2"><a href="#s4-5">4.5 沉默死亡追踪</a></li>
+      <li class="l2"><a href="#s4-6">4.6 人工内容层</a></li>
+      <li class="l2"><a href="#s4-7">4.7 质量红线</a></li>
+      <li class="l1"><a href="#s5">五、数据同步</a></li>
+      <li class="l1"><a href="#s6">六、已知边界与缺陷</a></li>
+      <li class="l1"><a href="#s7">附：常用命令速查</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main>
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="eyebrow">OPC Graveyard · Engineering Doc</p>
+    <h1>一人公司坟场 · 技术架构与页面逻辑</h1>
+    <p class="standfirst">
+      这个项目的全部技术事实：9 个页面各自在做什么、100 条案例的数据结构长什么样、
+      每天 14:00 的采集流水线怎么跑、以及本地 demo 为什么曾经显示旧数据。
+      本文档描述的是当前真实实现，不是规划稿——凡是写「没有」的，都查过代码确认没有。
+    </p>
+    <p class="meta-line">
+      <span>v1.0</span>
+      <span>2026-11-12</span>
+      <span>commit b5e2fad</span>
+      <span>案例库 100 条</span>
+    </p>
+
+    <div class="facts">
+      <div class="fact"><b>9</b><span>页面路由，全部静态生成</span></div>
+      <div class="fact"><b>0</b><span>API 路由 / 数据库 / 后端</span></div>
+      <div class="fact"><b>100</b><span>案例，目标门槛 500</span></div>
+      <div class="fact"><b>4</b><span>采集通道，含沉默死亡追踪</span></div>
+    </div>
+  </header>
+
+  <!-- ══════════ 0 ══════════ -->
+  <section class="chapter" id="s0">
+    <div class="chapter-head"><span class="num">00</span><h2 class="ch">一句话说清这个项目</h2></div>
+
+    <p><strong>静态数据 + 全站 SSG + 零后端。</strong></p>
+    <p>
+      100 条案例以 TypeScript 常量形式躺在 <code>src/data/cases.ts</code> 里，
+      <code>next build</code> 时被编译进 HTML。运行时没有数据库、没有 API 请求、没有服务端逻辑。
+      采集在 GitHub Actions 里由 Python 脚本完成，产出的结果通过 <code>git commit</code>
+      直接改写那个 TypeScript 文件——<strong>用 Git 当 CMS</strong>。
+    </p>
+
+    <p>这个架构选择的代价和收益都很明确：</p>
+
+    <div class="tscroll">
+      <table>
+        <caption>架构取舍</caption>
+        <thead><tr><th scope="col">维度</th><th scope="col">说明</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">收益</th><td>零运维成本、零数据库费用、全站 CDN 可缓存、构建即校验（类型不对就构建失败）、内容变更有完整 Git 历史</td></tr>
+          <tr><th scope="row">代价</th><td>每次内容更新都要重新构建；投稿无法实时入库（走邮件人工处理）；数据量大到几千条时 bundle 会变大</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ══════════ 1 ══════════ -->
+  <section class="chapter" id="s1">
+    <div class="chapter-head"><span class="num">01</span><h2 class="ch">技术架构</h2></div>
+
+    <h3 id="s1-1">1.1 技术栈</h3>
+    <div class="tscroll">
+      <table>
+        <caption>运行时与技术选型</caption>
+        <thead><tr><th scope="col">层</th><th scope="col">选型</th><th scope="col">版本</th><th scope="col">实际用途</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">框架</th><td>Next.js（App Router）</td><td class="num-col">16.1.1</td><td>全站静态生成，无 SSR</td></tr>
+          <tr><th scope="row">UI</th><td>React</td><td class="num-col">19.2.3</td><td>—</td></tr>
+          <tr><th scope="row">语言</th><td>TypeScript</td><td class="num-col">5.x</td><td>全量类型，数据文件受 <code>CaseRecord</code> 约束</td></tr>
+          <tr><th scope="row">样式</th><td>Tailwind CSS</td><td class="num-col">4.x</td><td>原子类，无 CSS Module、无 styled-components</td></tr>
+          <tr><th scope="row">组件库</th><td>shadcn/ui</td><td class="num-col">50+ 个</td><td>源码复制进 <code>src/components/ui</code>，可直接改</td></tr>
+          <tr><th scope="row">图标</th><td>lucide-react</td><td class="num-col">—</td><td>—</td></tr>
+          <tr><th scope="row">包管理</th><td>pnpm</td><td class="num-col">9.0.15</td><td><code>preinstall</code> 用 <code>only-allow pnpm</code> 强制</td></tr>
+          <tr><th scope="row">运行时</th><td>Node.js</td><td class="num-col">24</td><td><code>.coze</code> 中 <code>requires = ["nodejs-24"]</code></td></tr>
+          <tr><th scope="row">打包</th><td>tsup</td><td class="num-col">—</td><td>仅用于把 <code>src/server.ts</code> 打成 CJS</td></tr>
+          <tr><th scope="row">采集</th><td>Python 3 + requests + BeautifulSoup</td><td class="num-col">—</td><td>与前端完全隔离，不在同一运行时</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note warn">
+      <span class="lbl">装了但没用</span>
+      <p>
+        <code>dependencies</code> 共 57 个，其中 <code>@supabase/*</code>、<code>drizzle-orm</code>、
+        <code>pg</code>、<code>aws-sdk</code> 等是脚手架模板带进来的，全站代码里没有引用。
+        真正跑起来的只有 next / react / tailwind / lucide。
+      </p>
+    </div>
+
+    <h3 id="s1-2">1.2 三层结构</h3>
+    <div class="pipeline">
+      <div class="pstep">
+        <span class="tag">数据层</span>
+        <span class="ttl">src/data/*.ts</span>
+        <span class="dsc">纯 TypeScript 常量。构建时被 import 求值，没有任何 IO、没有 fetch、没有数据库。</span>
+      </div>
+      <div class="pstep">
+        <span class="tag">页面层</span>
+        <span class="ttl">src/app/**/page.tsx</span>
+        <span class="dsc">9 个路由全部是 Server Component。数据在构建时注入，用户拿到的就是渲染好的 HTML。</span>
+      </div>
+      <div class="pstep">
+        <span class="tag">交互层</span>
+        <span class="ttl">src/components/*.tsx</span>
+        <span class="dsc">只有 4 个文件带 <code>'use client'</code>：case-filter / check-client / contribute-form / subscribe-form。</span>
+      </div>
+    </div>
+
+    <div class="note">
+      <span class="lbl">关键事实</span>
+      <p>
+        <strong>全站 0 个 API 路由。</strong>
+        <code>find src/app -name "route.ts"</code> 返回空。没有 <code>/api/*</code>，没有 Server Action，没有 middleware。
+        所有「提交」动作都是 <code>mailto:</code> 唤起本地邮件客户端。
+      </p>
+    </div>
+
+    <h3 id="s1-3">1.3 目录结构</h3>
+<pre><code>opc-graveyard/
+├── .coze                        <span class="c"># 部署配置（dev / deploy 两套命令）</span>
+├── package.json                 <span class="c"># scripts 全部指向 ./scripts/*.sh</span>
+├── next.config.ts
+├── tsconfig.json
+├── src/
+│   ├── app/
+│   │   ├── layout.tsx           <span class="c"># 全局壳：字体、导航、页脚、metadata</span>
+│   │   ├── globals.css          <span class="c"># Tailwind 入口</span>
+│   │   ├── page.tsx             <span class="c"># /            首页</span>
+│   │   ├── cases/
+│   │   │   ├── page.tsx         <span class="c"># /cases       案例库列表</span>
+│   │   │   └── [slug]/page.tsx  <span class="c"># /cases/xxx   案例详情（SSG 100 条）</span>
+│   │   ├── chains/page.tsx      <span class="c"># /chains      死因传导</span>
+│   │   ├── check/
+│   │   │   ├── page.tsx         <span class="c"># /check       情境对照（服务端准备数据）</span>
+│   │   │   └── check-client.tsx <span class="c">#               六道题的交互组件</span>
+│   │   ├── duels/page.tsx       <span class="c"># /duels       同题对撞</span>
+│   │   ├── data/page.tsx        <span class="c"># /data        数据口径</span>
+│   │   ├── contribute/page.tsx  <span class="c"># /contribute  投稿</span>
+│   │   └── about/page.tsx       <span class="c"># /about       关于</span>
+│   ├── components/
+│   │   ├── case-card.tsx        <span class="c"># 案例卡片（墓碑样式）</span>
+│   │   ├── case-filter.tsx      <span class="c"># 筛选 + 搜索 + 排序（client）</span>
+│   │   ├── contribute-form.tsx  <span class="c"># 投稿表单 → mailto（client）</span>
+│   │   ├── subscribe-form.tsx   <span class="c"># 订阅表单 → mailto（client）</span>
+│   │   └── ui/                  <span class="c"># shadcn 组件，50+ 个</span>
+│   ├── data/
+│   │   ├── cases.ts             <span class="c"># ★ 主数据：100 条案例，4793 行</span>
+│   │   ├── counterparts.ts      <span class="c"># 8 组同题对撞</span>
+│   │   ├── failure-chains.ts    <span class="c"># 5 条死因传导链</span>
+│   │   └── self-check.ts        <span class="c"># 6 道自测题</span>
+│   ├── hooks/                   <span class="c"># 预留，当前未使用</span>
+│   ├── lib/                     <span class="c"># 工具函数</span>
+│   └── server.ts                <span class="c"># 自定义 http server（35 行）</span>
+├── scripts/
+│   ├── prepare.sh               <span class="c"># dev 前置：镜像 + 依赖</span>
+│   ├── dev.sh                   <span class="c"># dev 启动</span>
+│   ├── build.sh                 <span class="c"># 生产构建</span>
+│   ├── start.sh                 <span class="c"># 生产启动</span>
+│   ├── validate.sh              <span class="c"># 类型 + lint 校验</span>
+│   ├── local-workspace.cjs      <span class="c"># ★ /tmp 镜像机制</span>
+│   ├── sync-remote.sh           <span class="c"># ★ 远端数据同步（本次新增）</span>
+│   ├── case_harvest.py          <span class="c"># ★ 每日采集主脚本</span>
+│   ├── stale_tracker.py         <span class="c"># ★ 沉默死亡追踪</span>
+│   └── stale_seen.json          <span class="c"># 已产出域名台账</span>
+├── docs/                        <span class="c"># 4 份方法论文档</span>
+└── .github/workflows/
+    └── daily-case-harvest.yml   <span class="c"># ★ 每日 06:00 UTC 采集</span></code></pre>
+
+    <h3 id="s1-4">1.4 构建与运行：/tmp 镜像机制</h3>
+    <p>这是整个工程里最容易踩坑的地方，必须说清楚。</p>
+    <p>
+      <strong>问题</strong>：云盘的 IO 极慢，且 <code>node_modules</code> 放在云盘上会损坏
+      （文件数太多、符号链接不兼容）。
+    </p>
+    <p>
+      <strong>方案</strong>：<code>scripts/local-workspace.cjs</code> 在每次 prepare / dev 时，
+      把源码 rsync 到本地临时目录再操作。
+    </p>
+<pre><code>云盘原件                          /tmp 镜像
+/Coze/Drive/.../opc-graveyard/ →  os.tmpdir()/coze-web-{uid}/{sha256}/
+                                   ↑ sha256 由源路径算出，同一项目固定同一镜像</code></pre>
+    <p><strong>排除清单</strong>：<code>node_modules</code> / <code>.git</code> / <code>.next</code> / <code>logs</code> / <code>tsconfig.json</code></p>
+    <p>
+      <strong>防重入</strong>：脚本靠环境变量 <code>COZE_WEB_LOCAL_ACTIVE</code> 判断当前是否已经在镜像里。
+      三个脚本都是同一个模式：
+    </p>
+<pre><code>if [[ "${COZE_WEB_LOCAL_ACTIVE:-}" != "${PROJECT_ROOT}" ]]; then
+  <span class="c"># 还在云盘原件上 → 同步远端数据，然后跳进镜像</span>
+  bash "${SCRIPT_DIR}/sync-remote.sh" || true
+  exec node "${SCRIPT_DIR}/local-workspace.cjs" prepare "$@"
+fi
+<span class="c"># 已经在镜像里 → 继续往下执行真正的构建</span></code></pre>
+    <div class="note warn">
+      <span class="lbl">注意</span>
+      <p>
+        <strong>镜像里没有 <code>.git</code>。</strong>这意味着任何 git 操作都必须在 <code>exec</code>
+        之前、在云盘原件上完成。这也是 <code>sync-remote.sh</code> 被放在 <code>exec</code>
+        前面的原因——放后面就找不到仓库了。
+      </p>
+    </div>
+
+    <h3 id="s1-5">1.5 三套脚本的分工</h3>
+    <div class="tscroll">
+      <table>
+        <caption>脚本职责</caption>
+        <thead><tr><th scope="col">脚本</th><th scope="col">何时跑</th><th scope="col">做什么</th></tr></thead>
+        <tbody>
+          <tr><td><code>prepare.sh</code></td><td>dev 构建阶段</td><td>镜像 → <code>pnpm install</code> → 必要时初始化</td></tr>
+          <tr><td><code>dev.sh</code></td><td>dev 运行阶段</td><td>镜像 → <code>pnpm next dev</code>，监听端口</td></tr>
+          <tr><td><code>validate.sh</code></td><td>dev 校验阶段</td><td><code>pnpm validate</code>（ts-check + eslint + stylelint 并行）</td></tr>
+          <tr><td><code>build.sh</code></td><td>生产构建</td><td><code>pnpm install</code> → <code>pnpm next build</code> → <code>pnpm tsup src/server.ts</code></td></tr>
+          <tr><td><code>start.sh</code></td><td>生产运行</td><td><code>node dist/server.js</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      <code>package.json</code> 的 scripts 全部是薄壳，实际逻辑都在 <code>./scripts/*.sh</code> 里：
+    </p>
+<pre><code>"dev":      "bash ./scripts/dev.sh",
+"build":    "bash ./scripts/build.sh",
+"start":    "bash ./scripts/start.sh",
+"validate": "pnpm dlx concurrently --group --names lint-tsc,lint-build,lint-style ..."</code></pre>
+    <p>
+      <code>src/server.ts</code> 只有 35 行——一个最小的 http 包装，让 Next 的构建产物能被外部进程拉起。
+      生产/开发由 <code>COZE_PROJECT_ENV !== 'PROD'</code> 决定。
+    </p>
+
+    <h3 id="s1-6">1.6 部署形态</h3>
+    <p><code>.coze</code> 里定义了两套完全独立的命令：</p>
+<pre><code>[project]
+requires     = [ "nodejs-24" ]
+project_type = "web"
+project_name = "opc-graveyard"
+project_id   = "7694248872205565986"
+app_id       = "7694321552451436559"
+template     = "nextjs"
+
+[dev]
+build    = [ "bash", "./scripts/prepare.sh" ]
+run      = [ "bash", "./scripts/dev.sh" ]
+validate = [ "bash", "./scripts/validate.sh" ]
+deps     = [ "git", "rsync" ]      <span class="c"># rsync 是镜像机制依赖的</span>
+
+[deploy]
+build = [ "bash", "./scripts/build.sh" ]
+run   = [ "bash", "./scripts/start.sh" ]
+deps  = [ "git" ]</code></pre>
+
+    <div class="note warn">
+      <span class="lbl">当前状态：未上线</span>
+      <ul style="margin-bottom:0">
+        <li><code>opcgraveyard.com</code> DNS 解析失败（<code>dig</code> 返回 exit 6），域名未生效</li>
+        <li><code>docs/内容采集规则.md</code> 第 165 行写明门槛：「<strong>达标前</strong>：不部署线上（用户明确要求 500 条门槛），本地/预览域持续积累」</li>
+        <li>当前 100 条 / 目标 500 条</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ══════════ 2 ══════════ -->
+  <section class="chapter" id="s2">
+    <div class="chapter-head"><span class="num">02</span><h2 class="ch">页面逻辑</h2></div>
+
+    <h3 id="s2-0">2.0 路由总表</h3>
+    <div class="tscroll">
+      <table>
+        <caption>9 个路由的数据依赖与交互</caption>
+        <thead><tr><th scope="col">路由</th><th scope="col">文件</th><th scope="col">数据来源</th><th scope="col">主要交互</th></tr></thead>
+        <tbody>
+          <tr><td><code>/</code></td><td><code>app/page.tsx</code></td><td>cases + counterparts</td><td>纯跳转</td></tr>
+          <tr><td><code>/cases</code></td><td><code>app/cases/page.tsx</code></td><td>cases</td><td>筛选 / 搜索 / 排序（client）</td></tr>
+          <tr><td><code>/cases/[slug]</code></td><td><code>app/cases/[slug]/page.tsx</code></td><td>cases + counterparts</td><td>纯阅读</td></tr>
+          <tr><td><code>/chains</code></td><td><code>app/chains/page.tsx</code></td><td>failure-chains + cases</td><td>纯阅读</td></tr>
+          <tr><td><code>/check</code></td><td><code>app/check/page.tsx</code></td><td>self-check + cases</td><td>六题作答（client）</td></tr>
+          <tr><td><code>/duels</code></td><td><code>app/duels/page.tsx</code></td><td>counterparts + cases</td><td>纯阅读</td></tr>
+          <tr><td><code>/data</code></td><td><code>app/data/page.tsx</code></td><td>cases</td><td>纯阅读</td></tr>
+          <tr><td><code>/contribute</code></td><td><code>app/contribute/page.tsx</code></td><td>无</td><td>表单 → mailto</td></tr>
+          <tr><td><code>/about</code></td><td><code>app/about/page.tsx</code></td><td>cases</td><td>纯阅读</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      <strong>全部 9 个路由都是静态生成</strong>，没有一个走运行时。
+      <code>/cases/[slug]</code> 通过 <code>generateStaticParams()</code> 在构建时展开成 100 个 HTML 页面。
+    </p>
+
+    <h3 id="s2-1">2.1 全局壳（app/layout.tsx）</h3>
+    <p>导航固定 8 项，顺序即信息架构：</p>
+<pre><code>const NAV_ITEMS = [
+  { href: '/',           label: '首页' },
+  { href: '/cases',      label: '案例库' },
+  { href: '/chains',     label: '传导链' },
+  { href: '/check',      label: '对照' },
+  { href: '/duels',      label: '对撞' },
+  { href: '/data',       label: '口径' },
+  { href: '/contribute', label: '投稿' },
+  { href: '/about',      label: '关于' },
+];</code></pre>
+    <p>
+      移动端处理：nav 容器 <code>overflow-x-auto</code> + <code>[scrollbar-width:none]</code> 隐藏滚动条，
+      链接 <code>shrink-0 whitespace-nowrap</code> 不换行，横向滑动。
+    </p>
+    <p>metadata 层：title 模板 <code>%s | 一人公司坟场</code>，含 keywords、openGraph、robots。</p>
+
+    <h3 id="s2-2">2.2 首页 /</h3>
+    <p>构建时算出 6 组派生数据，然后按固定顺序铺 7 个区块：</p>
+<pre><code><span class="c">// 最新下葬：按 closedYear 倒序取 5 条</span>
+const latest = [...CASES]
+  .sort((a, b) =&gt; (b.closedYear || '').localeCompare(a.closedYear || ''))
+  .slice(0, 5);
+
+const total         = CASES.length;
+const verifiedCount = CASES.filter((c) =&gt; c.verified).length;
+const avgLifespan   = Math.round((CASES.reduce((s, c) =&gt; s + c.lifespanMonths, 0) / total) * 10) / 10;
+
+<span class="c">// 死因分布：按主标签计数后降序</span>
+const causeStats = DEATH_CAUSES
+  .map((cause) =&gt; ({ cause, count: CASES.filter((c) =&gt; c.primaryTag === cause.value).length }))
+  .sort((a, b) =&gt; b.count - a.count);
+
+<span class="c">// 同题对撞：前 3 组，且必须能在案例库里找到对应墓碑</span>
+const duels = DUELS.slice(0, 3)
+  .map((duel) =&gt; ({ duel, dead: getCaseBySlug(duel.caseSlug) }))
+  .filter((d): d is { duel: CounterpartDuel; dead: CaseRecord } =&gt; d.dead !== undefined);</code></pre>
+
+    <div class="routes">
+      <div class="route"><span class="path">1 · Hero</span><div class="what">品牌主张 + 三个 CTA，分别导向 /chains、/check、/cases——按「先理解死法 → 再对照自己 → 最后看细节」的认知顺序排列</div></div>
+      <div class="route"><span class="path">2 · 从哪开始读</span><div class="what">四步阅读路径（step + title + 描述）</div></div>
+      <div class="route"><span class="path">3 · 数据概览</span><div class="what">总数 / 已验证数 / 平均存活月数</div></div>
+      <div class="route"><span class="path">4 · 死因分布</span><div class="what">六死因计数条，锚点 <code>id="causes"</code> + <code>scroll-mt-16</code>，避开固定导航遮挡</div></div>
+      <div class="route"><span class="path">5 · 最新下葬</span><div class="what">5 张案例卡</div></div>
+      <div class="route"><span class="path">6 · 同题对撞</span><div class="what">前 3 组，左侧墓碑右侧活样本</div></div>
+      <div class="route"><span class="path">7 · 结尾</span><div class="what">收束 CTA</div></div>
+    </div>
+
+    <h3 id="s2-3">2.3 案例库 /cases</h3>
+    <p>Server Component 负责聚合筛选维度，Client Component 负责实际交互。这是全站唯一的数据加工分工。</p>
+<pre><code><span class="c">// app/cases/page.tsx —— 服务端，运行时聚合三组 facet（带 count）</span>
+export default async function CasesPage({ searchParams }: { searchParams: Promise&lt;{ q?: string }&gt; }) {
+  <span class="c">// Next 16 的 params / searchParams 是 Promise，必须 await</span>
+}</code></pre>
+<pre><code><span class="c">// components/case-filter.tsx —— 'use client'</span>
+const [industry, setIndustry] = useState('全部');
+const [cause,    setCause]    = useState('全部');
+const [region,   setRegion]   = useState('全部');
+const [query,    setQuery]    = useState(initialQuery);
+const [sort,     setSort]     = useState&lt;SortKey&gt;('default');
+
+const filtered = useMemo(() =&gt; {
+  return cases
+    .filter((c) =&gt; industry === '全部' || c.industry === industry)
+    .filter((c) =&gt; cause    === '全部' || c.primaryTag === cause)
+    .filter((c) =&gt; region   === '全部' || c.region === region)
+    .filter(<span class="c">/* query 匹配 name / epitaph / industry / 标签 */</span>)
+    <span class="c">/* sort */</span>;
+}, [cases, industry, cause, region, query, sort]);</code></pre>
+    <p>
+      四个排序键：<code>default</code>（原始顺序）/ <code>lifespan-desc</code>（活得久→短）/
+      <code>lifespan-asc</code>（死得快→慢）/ <code>investment</code>（按融资规模）。
+    </p>
+    <p><code>?q=</code> 支持从首页/其他页带词跳转进来，初始值注入 <code>useState</code>。</p>
+
+    <h3 id="s2-4">2.4 案例详情 /cases/[slug]</h3>
+    <p>全站信息密度最高的页面。构建时一次性展开 100 条：</p>
+<pre><code>export function generateStaticParams() {
+  return CASES.map((c) =&gt; ({ slug: c.slug }));
+}
+
+export async function generateMetadata({ params }) {
+  <span class="c">// description 取 epitaph 前 100 字 + 省略号</span>
+}</code></pre>
+    <p>页面结构自上而下：</p>
+    <ol>
+      <li><strong>墓碑头</strong> — 公司名、生死年份、副标签徽章组、墓志铭（<code>epitaph</code>）</li>
+      <li><strong>基础信息表</strong> — 成立/关闭年份、地区、行业、商业模式、存活月数、融资情况</li>
+      <li><strong>时间线</strong> — <code>timeline[]</code> 按事件顺序铺开，每条含 date / type / event</li>
+      <li><strong>死因拆解</strong> — <code>breakdown[]</code>，3–4 层因果链，每层 <code>{ layer, detail }</code></li>
+      <li><strong>教训</strong> — <code>lessons[]</code>，黑底区块，视觉上刻意与其他区块区分</li>
+      <li><strong>同题对撞反向样本</strong> — 若该案例在 <code>DUELS</code> 里，展示对应的活着的项目。容器用 <code>border-2 border-dashed border-emerald-300</code>，与墓碑的实线形成对照</li>
+      <li><strong>相关案例</strong> — 同主标签的其他案例</li>
+    </ol>
+
+    <h3 id="s2-5">2.5 死因传导 /chains</h3>
+    <p>这个页面的核心论点写在 h1 里：<strong>「六个死因，不是六个格子，是五条路」</strong>。</p>
+<pre><code>const chains = FAILURE_CHAINS.map((chain) =&gt; ({
+  chain,
+  cases: chain.caseSlugs.map(getCaseBySlug).filter(Boolean),
+}));
+
+<span class="c">// 覆盖率：有多少条案例被至少一条链覆盖</span>
+const covered = new Set(FAILURE_CHAINS.flatMap((c) =&gt; c.caseSlugs));
+const total = CASES.length;</code></pre>
+    <p>
+      五条链，每条结构为 <code>{ id, name, subtitle, steps[], logic[], caseSlugs[] }</code>，
+      <code>steps</code> 里的每一步都带 <code>stage</code>（起点 / 加速 / 终局）和对应的死因 <code>tags</code>：
+    </p>
+    <div class="tscroll">
+      <table>
+        <caption>五条传导链</caption>
+        <thead><tr><th scope="col">id</th><th scope="col">名称</th><th scope="col">一句话</th></tr></thead>
+        <tbody>
+          <tr><td><code>self-hype-spiral</code></td><td>自嗨螺旋</td><td>从自己的痛点出发，做完了才发现只有自己需要</td></tr>
+          <tr><td><code>commodity-squeeze</code></td><td>平权绞杀</td><td>你的护城河是「比它更好」，而「更好」的保质期只有几个月</td></tr>
+          <tr><td><code>single-thread-life</code></td><td>命脉外包</td><td>全部流量/收入压在一个不属于自己的渠道上</td></tr>
+          <tr><td><code>single-decider</code></td><td>一个人拍板</td><td>没有第二个人能否决，错误决策一路走到底</td></tr>
+          <tr><td><code>fixed-cost-trap</code></td><td>重资产陷阱</td><td>固定成本先于收入发生，且不可逆</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      页面尾部有「全库主标签分布」，把标签计数与链路并置，让读者看到「分类」和「过程」的差别。
+    </p>
+
+    <h3 id="s2-6">2.6 情境对照 /check</h3>
+    <p>设计上刻意反测评：<strong>不给分数、不给结论</strong>。</p>
+<pre><code><span class="c">// 服务端把 slug 解析成轻量案例对象，再交给 client</span>
+const items: CheckItem[] = CHECK_QUESTIONS.map((q) =&gt; ({
+  id: q.id, tag: q.tag, question: q.question, why: q.why,
+  options: q.options, cNote: q.cNote, bNote: q.bNote,
+  cases: q.caseSlugs.flatMap((slug) =&gt; {
+    <span class="c">/* 取 name / primaryTag / lifespanMonths / region */</span>
+  }),
+}));</code></pre>
+    <p>
+      六道题，每个选项全是<strong>行为描述</strong>（不是态度打分）。答完后不是给风险等级，
+      而是把你当前的状态对应到案例库里某一组真实项目，让你自己去读那些项目后来怎么了。
+    </p>
+    <div class="note">
+      <span class="lbl">产品铁律的落地</span>
+      <p>这是「不提供决策，只提供信息，所有决策建议均由用户自己做出」这条原则在交互层的直接体现。</p>
+    </div>
+
+    <h3 id="s2-7">2.7 同题对撞 /duels</h3>
+    <p>8 组。每组把一个死掉的项目和一个同赛道活着的项目并排。</p>
+<pre><code>const duels = DUELS.map((duel) =&gt; ({ duel, dead: getCaseBySlug(duel.caseSlug) }))
+  .filter((d): d is { duel: CounterpartDuel; dead: CaseRecord } =&gt; d.dead !== undefined);</code></pre>
+    <p>
+      数据结构 <code>CounterpartDuel</code> 与 <code>AliveProject</code>：死的一侧指向
+      <code>cases.ts</code> 里的 slug，活的一侧是独立字段（活项目不进案例库，因为它没死）。
+      活样本来源标注为 Indie Hackers 社区与公开报道。
+    </p>
+
+    <h3 id="s2-8">2.8 数据口径 /data</h3>
+    <p>这是全站可信度的锚点。它在做一件很少见的事：<strong>主动暴露自己的数据缺陷</strong>。</p>
+<pre><code>function quantile(sorted: number[], p: number) { <span class="c">/* 线性插值分位数 */</span> }
+
+const lifes  = CASES.map((c) =&gt; c.lifespanMonths).sort((a, b) =&gt; a - b);
+const median = quantile(lifes, 0.5);
+const p25    = quantile(lifes, 0.25);
+const p75    = quantile(lifes, 0.75);
+const avg    = Math.round((lifes.reduce((s, x) =&gt; s + x, 0) / total) * 10) / 10;</code></pre>
+    <p>六个区块：</p>
+    <ol>
+      <li><strong>样本概况</strong> — 总数、已验证数、中位数 / 四分位 / 均值</li>
+      <li><strong>死因分布</strong> — 主标签计数 + 百分比，并明确写「在这个量级上，两个死因之间相差 2–3 条不足以说明谁更常见」</li>
+      <li><strong>存活时长分布</strong> — 分桶（≤12 / 13–24 / 25–36 / …）</li>
+      <li><strong>已知的数据问题</strong> — 字段缺失、口径不一致、来源不可核</li>
+      <li><strong>这个库不能用来推断什么</strong> — 明确划出推论边界</li>
+      <li>所有数字旁边都标 <code>n</code></li>
+    </ol>
+    <p><strong>这是「所有数字都带 n、所有结论都带边界」原则的实现位置。</strong></p>
+
+    <h3 id="s2-9">2.9 投稿 /contribute</h3>
+    <p><strong>没有后端。</strong>表单提交时拼接 <code>mailto:</code>：</p>
+<pre><code>window.location.href =
+  `mailto:hello@opcgraveyard.com?subject=${encodeURIComponent(subject)}&amp;body=${encodeURIComponent(body)}`;</code></pre>
+    <p><code>subscribe-form.tsx</code> 用同一套机制。</p>
+    <div class="tscroll">
+      <table>
+        <caption>mailto 方案的取舍</caption>
+        <thead><tr><th scope="col">面</th><th scope="col">说明</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">好处</th><td>零运维、零垃圾数据入库风险、不需要审核队列</td></tr>
+          <tr><th scope="row">代价</th><td>依赖用户本地配了邮件客户端；没有提交回执；无法统计转化</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      页面顶部有四个承诺标签：🚫 不评判不嘲笑 / 🔒 支持匿名 / ✅ 发布前与你确认 /
+      💡 你的教训将帮助上千名准 OPC 创业者。
+    </p>
+
+    <h3 id="s2-10">2.10 关于 /about</h3>
+    <p>
+      静态叙事页，唯一的动态数据是 <code>CASES.length</code>（用于说明当前样本量）。
+      内容覆盖：我们相信什么、方法论、内容来源、免责声明。
+    </p>
+  </section>
+
+  <!-- ══════════ 3 ══════════ -->
+  <section class="chapter" id="s3">
+    <div class="chapter-head"><span class="num">03</span><h2 class="ch">数据模型</h2></div>
+
+    <h3 id="s3-1">3.1 CaseRecord —— 30 个字段</h3>
+    <p>定义在 <code>src/data/cases.ts</code>，分六组。</p>
+
+    <p class="grp">基础 · 9</p>
+    <div class="tscroll">
+      <table>
+        <caption>基础字段</caption>
+        <thead><tr><th scope="col">字段</th><th scope="col">类型</th><th scope="col">说明</th></tr></thead>
+        <tbody>
+          <tr><td><code>slug</code></td><td>string</td><td>URL 标识，全局唯一</td></tr>
+          <tr><td><code>name</code></td><td>string</td><td>公司 / 项目名</td></tr>
+          <tr><td><code>status</code></td><td><code>'dead' | 'acquired' | 'pivoted'</code></td><td>终局形态</td></tr>
+          <tr><td><code>foundedYear</code></td><td>string</td><td>成立年份</td></tr>
+          <tr><td><code>closedYear</code></td><td>string</td><td>关闭年份</td></tr>
+          <tr><td><code>region</code></td><td>string</td><td>国家 / 地区</td></tr>
+          <tr><td><code>industry</code></td><td>string</td><td>行业</td></tr>
+          <tr><td><code>businessModel</code></td><td>string</td><td>商业模式描述</td></tr>
+          <tr><td><code>lifespanMonths</code></td><td>number</td><td>存活时长（月），全站统计的基准字段</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="grp">资金 · 5</p>
+    <div class="tscroll">
+      <table>
+        <caption>资金字段</caption>
+        <thead><tr><th scope="col">字段</th><th scope="col">类型</th><th scope="col">说明</th></tr></thead>
+        <tbody>
+          <tr><td><code>totalFunding</code></td><td>string</td><td>总融资额，允许「未披露（约数千万美元级估值）」这类带说明的写法</td></tr>
+          <tr><td><code>fundingRounds</code></td><td>number</td><td>融资轮次</td></tr>
+          <tr><td><code>lastStage</code></td><td>string</td><td>最后阶段</td></tr>
+          <tr><td><code>investors</code></td><td>string[]</td><td>投资方，可为空数组</td></tr>
+          <tr><td><code>fundingType</code></td><td><code>'自筹' | '融资' | '混合'</code></td><td>资金来源类型</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="grp">标签 · 2</p>
+    <div class="tscroll">
+      <table>
+        <caption>标签字段</caption>
+        <thead><tr><th scope="col">字段</th><th scope="col">类型</th><th scope="col">说明</th></tr></thead>
+        <tbody>
+          <tr><td><code>primaryTag</code></td><td><code>FailureTag</code></td><td>六死因之一，只能选一个</td></tr>
+          <tr><td><code>secondaryTags</code></td><td><code>FailureTag[]</code></td><td>十副标签，0–3 个</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="grp">叙事 · 10</p>
+    <div class="tscroll">
+      <table>
+        <caption>叙事字段</caption>
+        <thead><tr><th scope="col">字段</th><th scope="col">说明</th></tr></thead>
+        <tbody>
+          <tr><td><code>timeline</code></td><td><code>TimelineEvent[]</code>，<code>{ date, type, event }</code>，3–8 条</td></tr>
+          <tr><td><code>founderAccount</code></td><td>创始人自述（若有）</td></tr>
+          <tr><td><code>editorSummary</code></td><td>编辑摘要</td></tr>
+          <tr><td><code>postmortem</code></td><td>尸检报告，正文</td></tr>
+          <tr><td><code>sources</code></td><td><code>string[]</code>，来源链接</td></tr>
+          <tr><td><code>founderBg</code></td><td>创始人背景</td></tr>
+          <tr><td><code>epitaph</code></td><td>墓志铭，一句话</td></tr>
+          <tr><td><code>motivation</code></td><td>创业动机</td></tr>
+          <tr><td><code>breakdown</code></td><td><code>{ layer, detail }[]</code>，3–4 层因果链 —— <strong>全站最有价值的字段</strong></td></tr>
+          <tr><td><code>lessons</code></td><td><code>string[]</code>，教训列表</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="grp">可信度 · 2</p>
+    <div class="tscroll">
+      <table>
+        <caption>可信度字段</caption>
+        <thead><tr><th scope="col">字段</th><th scope="col">说明</th></tr></thead>
+        <tbody>
+          <tr><td><code>sourceType</code></td><td><code>interview</code> / <code>public_record</code> / <code>ai_assisted</code> / <code>crowdsourced</code></td></tr>
+          <tr><td><code>verified</code></td><td>boolean，是否人工核实过。当前 <strong>78 / 100</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="grp">差异化 · 2（可选）</p>
+    <div class="tscroll">
+      <table>
+        <caption>差异化字段</caption>
+        <thead><tr><th scope="col">字段</th><th scope="col">说明</th></tr></thead>
+        <tbody>
+          <tr><td><code>rebuildPlan?</code></td><td>重做方案</td></tr>
+          <tr><td><code>opportunityScore?</code></td><td>机会分 1–10</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <span class="lbl">字段命名约定</span>
+      <p>
+        所有「不确定」都用<strong>带说明的字符串</strong>表达，而不是留空或填 0。例如
+        <code>totalFunding: "未披露（约数千万美元级估值）"</code>。这样前端不需要做 null 判断，
+        读者也能看到信息的不确定性程度。
+      </p>
+    </div>
+
+    <h3 id="s3-2">3.2 四个数据文件</h3>
+    <div class="tscroll">
+      <table>
+        <caption>数据文件与导出</caption>
+        <thead><tr><th scope="col">文件</th><th scope="col">行数</th><th scope="col">导出</th><th scope="col">作用</th></tr></thead>
+        <tbody>
+          <tr><td><code>cases.ts</code></td><td class="num-col">4793</td><td><code>CASES</code> / <code>CaseRecord</code> / <code>DEATH_CAUSES</code> / <code>SECONDARY_TAGS</code> / <code>getCaseBySlug</code></td><td>主数据，100 条</td></tr>
+          <tr><td><code>counterparts.ts</code></td><td class="num-col">129</td><td><code>DUELS</code> / <code>CounterpartDuel</code> / <code>AliveProject</code> / <code>getDuelByCase</code></td><td>8 组同题对撞</td></tr>
+          <tr><td><code>failure-chains.ts</code></td><td class="num-col">263</td><td><code>FAILURE_CHAINS</code> / <code>FailureChain</code> / <code>ChainStep</code> / <code>getChainById</code></td><td>5 条传导链</td></tr>
+          <tr><td><code>self-check.ts</code></td><td class="num-col">163</td><td><code>CHECK_QUESTIONS</code> / <code>CheckQuestion</code> / <code>CheckOption</code></td><td>6 道自测题</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      四个文件之间是<strong>弱引用</strong>：<code>counterparts</code> / <code>failure-chains</code> /
+      <code>self-check</code> 都只存 <code>caseSlugs: string[]</code>，页面渲染时才用
+      <code>getCaseBySlug()</code> 解析。好处是数据可以单独编辑、单个 slug 写错不会导致构建失败
+      （只是那条不显示）；代价是拼写错误是静默的。
+    </p>
+
+    <h3 id="s3-3">3.3 标签体系</h3>
+    <h4>六死因（主标签只能选一个）</h4>
+    <div class="tscroll">
+      <table>
+        <caption>DEATH_CAUSES</caption>
+        <thead><tr><th scope="col">值</th><th scope="col">颜色</th><th scope="col">定义</th></tr></thead>
+        <tbody>
+          <tr><td>获客失败</td><td><code>red-600</code></td><td>做出来了，卖不出去：品牌、渠道、销售能力未被 AI 同步降低</td></tr>
+          <tr><td>需求验证缺失</td><td><code>amber-700</code></td><td>做出来没人要：未验证市场需求就投入开发，先做再想</td></tr>
+          <tr><td>商业模式脆弱</td><td><code>orange-700</code></td><td>没有经常性收入、大客户依赖、回款风险，模式无法自洽</td></tr>
+          <tr><td>成本结构失衡</td><td><code>purple-700</code></td><td>AI 工具等刚性成本持续消耗，盈亏平衡点反而更高</td></tr>
+          <tr><td>同质化竞争</td><td><code>sky-700</code></td><td>技术平权：AI 让所有人做出 70 分产品，定价权被抹平</td></tr>
+          <tr><td>合规与决策风险</td><td><code>emerald-700</code></td><td>一人决策无纠偏 + 数据源 / 版权 / 监管合规意识薄弱</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>十副标签（SECONDARY_TAGS）</h4>
+    <p>
+      资金断裂 / 团队解散 / 创始人退出 / 监管处罚 / 技术淘汰 / 数据泄露 / 恶性竞争 /
+      增长失速 / 收购后关停 / 平台封禁
+    </p>
+    <p>
+      主标签是<strong>死因归类</strong>，副标签是<strong>终局形态</strong>。两者正交，可以自由组合。
+    </p>
+  </section>
+
+  <!-- ══════════ 4 ══════════ -->
+  <section class="chapter" id="s4">
+    <div class="chapter-head"><span class="num">04</span><h2 class="ch">数据更新逻辑</h2></div>
+
+    <h3 id="s4-1">4.1 全景</h3>
+    <div class="pipeline">
+      <div class="pstep">
+        <span class="tag">触发</span>
+        <span class="ttl">GitHub Actions</span>
+        <span class="dsc">每天 06:00 UTC（14:00 北京时间）</span>
+      </div>
+      <div class="pstep hl">
+        <span class="tag">采集</span>
+        <span class="ttl">case_harvest.py</span>
+        <span class="dsc">四源并行 → 抓正文 → LLM 结构化抽取 → 去重合并</span>
+      </div>
+      <div class="pstep">
+        <span class="tag">落库</span>
+        <span class="ttl">git commit + push</span>
+        <span class="dsc">直接改写 src/data/cases.ts，提交信息 <code>chore: daily case harvest 日期</code></span>
+      </div>
+      <div class="pstep hl">
+        <span class="tag">同步</span>
+        <span class="ttl">sync-remote.sh</span>
+        <span class="dsc">每次 prepare / dev 之前自动把远端快进合并回本地</span>
+      </div>
+      <div class="pstep">
+        <span class="tag">呈现</span>
+        <span class="ttl">next build</span>
+        <span class="dsc">生成 100 个静态页面</span>
+      </div>
+    </div>
+
+    <h3 id="s4-2">4.2 定时任务</h3>
+    <p><code>.github/workflows/daily-case-harvest.yml</code>：</p>
+<pre><code>on:
+  schedule:
+    - cron: '0 6 * * *'        <span class="c"># 06:00 UTC = 14:00 北京时间</span>
+
+steps:
+  - 安装 dnsutils（沉默死亡追踪需要 dig 判定 NXDOMAIN）
+  - pip install -r scripts/requirements.txt
+  - python scripts/case_harvest.py 30 730    <span class="c"># 最多 30 条，回看 730 天</span>
+  - git add src/data/cases.ts
+    [ -f scripts/stale_seen.json ] &amp;&amp; git add scripts/stale_seen.json
+  - 有变化则 commit + push</code></pre>
+    <p>
+      环境变量：<code>LLM_API_KEY</code> / <code>LLM_API_BASE</code> / <code>LLM_MODEL</code> /
+      <code>ENABLE_STALE_TRACKER=1</code>。提交机器人身份：<code>opc-harvest-bot</code>。
+    </p>
+
+    <h3 id="s4-3">4.3 四源采集</h3>
+    <div class="tscroll">
+      <table>
+        <caption>四个采集通道</caption>
+        <thead><tr><th scope="col">源</th><th scope="col">实现</th><th scope="col">定位</th></tr></thead>
+        <tbody>
+          <tr><td><strong>GNews</strong></td><td>Google News RSS 关键词检索</td><td>主力：有报道的、有名有姓的失败</td></tr>
+          <tr><td><strong>HN</strong></td><td>Algolia API <code>tags=story</code>，按 points / 评论数过滤</td><td>补充：海外独立开发者项目</td></tr>
+          <tr><td><strong>Stale</strong></td><td>自研，见 4.5</td><td><strong>主动发现</strong>：没人报道、悄悄消失的项目</td></tr>
+          <tr><td><strong>CN</strong></td><td>中文媒体源</td><td>本土案例</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>四个池子按 <strong>round-robin 交错合并</strong>，而不是顺序拼接：</p>
+<pre><code>order = ["gnews", "hn", "stale", "cn"]
+idx = {k: 0 for k in order}
+while any(idx[k] &lt; len(pools[k]) for k in order):
+    for k in order:
+        if idx[k] &lt; len(pools[k]):
+            cands.append(pools[k][idx[k]])
+            idx[k] += 1</code></pre>
+    <div class="note">
+      <span class="lbl">为什么这么做</span>
+      <p>
+        如果顺序拼接，<code>fetch_all(n=50)</code> 会先把 GNews 的 50 条全抓完，后面的源永远轮不上。
+        交错之后，每个源都能进前 50，来源多样性有保证。
+      </p>
+    </div>
+
+    <h3 id="s4-4">4.4 抓取与 LLM 抽取</h3>
+    <p><strong><code>fetch_all(cands, n=20)</code></strong> 有一层「免抓」优化：</p>
+<pre><code>min_body = 120 if it.get("is_selfpost") else 60</code></pre>
+    <p>正文本来就够长的（比如 HN 的 self post、RSS 全文），直接拿来用，不占抓取名额。</p>
+    <p>
+      <strong><code>extract_cases(fetched, max_n)</code></strong> 把 <code>url + content</code>
+      塞进 <code>EXTRACT_PROMPT</code>，让 LLM 输出符合 <code>CaseRecord</code> 结构的 JSON。
+    </p>
+    <p>
+      <strong>顺序很关键</strong>：先调 LLM，后查重。原因是 LLM 抽取时可能判定「这不是一个商业失败案例」
+      而返回空 slug——这类候选应该被丢掉，不应该占用去重名额。
+    </p>
+
+    <h3 id="s4-5">4.5 沉默死亡追踪（stale_tracker.py）</h3>
+    <p>
+      本轮新增的第四通道，解决的问题是：<strong>有大量项目死了但没有任何人报道</strong>。
+      它们只是某天域名到期没续，官网变成 404，然后就消失了。
+    </p>
+
+    <h4>双闸门设计 —— 必须同时满足</h4>
+    <div class="tscroll">
+      <table>
+        <caption>沉默死亡的判定条件</caption>
+        <thead><tr><th scope="col">闸门</th><th scope="col">条件</th><th scope="col">判定方式</th></tr></thead>
+        <tbody>
+          <tr><td>闸门一：时间</td><td>≥ 12 个月没有可观测活动</td><td>HN Show HN 发帖时间距今 ≥ 12 个月</td></tr>
+          <tr><td>闸门二：存在性</td><td>站点确实消失了</td><td>DNS <code>NXDOMAIN</code>，或根路径持续 404 / 410</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>三条质量闸（防假阳性）</h4>
+    <p>这三条是踩了坑之后加的，每一条都对应一次真实的误判：</p>
+    <ol>
+      <li>
+        <strong>一律用根路径重测。</strong>原 URL 可能是子路径（<code>nanonets.com/some-product</code>），
+        子页面没了但公司活着。实测 Nanonets 是家融资数千万的真实公司，根路径 HTTP 200。
+        所以 <code>_is_dead</code> 只用 <code>https://{root}/</code> 和 <code>https://www.{root}/</code> 测。
+      </li>
+      <li>
+        <strong>子域死不算死。</strong><code>demo.duckui.com</code> NXDOMAIN，但 <code>duckui.com</code>
+        活得好好的。先取根域再判。
+      </li>
+      <li>
+        <strong>5xx 一律不判死。</strong><code>goaliemvmt.com</code> 返回 530（Cloudflare 源站错误），
+        可能是临时故障。宁可漏，不可错。
+      </li>
+    </ol>
+
+    <h4>商业性闸门</h4>
+    <p>
+      域名死了不等于这是个生意。第一版跑出过「地图记忆小游戏」和「Pitbull 歌词站」——域名确实死了，
+      但它们从来不是商业项目。所以加了 <code>BIZ_SIGNALS</code>：讨论里必须出现 ≥ 2 个不同的商业信号
+      （pricing / subscription / revenue / customers / MRR / churn / competitors …），
+      否则判为「玩具不是生意」，跳过。
+    </p>
+
+    <h4>分页策略</h4>
+    <p>
+      Algolia 有个坑：<code>hitsPerPage * page ≤ 1000</code>。36 个月窗口有 18645 条 Show HN，
+      翻页翻不完。改成<strong>按月切片</strong>，每次随机扫 2 个月份，36 个月 18 天轮完一轮。
+    </p>
+
+    <h4>证据包与写作约束</h4>
+    <p>
+      每个候选会生成一份人类可读的「沉默死亡检测报告」，包含 HN 帖子原文、按深度排序的评论、
+      域名检测结果。后面跟一段强写作约束，防止 LLM 编造：
+    </p>
+<pre><code>1. 融资额、收入、用户数、团队规模、创始人背景：材料里没有的，
+   一律写「未披露」或空字符串，绝对不得推测或编造具体数字。
+2. 死因拆解只能基于两件事：HN 评论里暴露的产品/运营/需求问题，
+   以及「域名到期未续、产品无公告消失」这一事实本身。
+3. closedAt 用「约 YYYY 年」，不要编造月份。
+4. 如果 HN 评论少于 3 条有效内容…说明证据不足——slug 直接返回空字符串。
+5. 如果这不是一个商业产品（纯开源工具、游戏 demo、个人博客、教程站），
+   slug 直接返回空字符串。</code></pre>
+    <p>
+      <strong>实测产出</strong>（每轮约 148 秒）：<code>indiebackers.dev</code> /
+      <code>quicklang.app</code> / <code>ext.store</code> / <code>logomvp.com</code> /
+      <code>indiepulse.co</code> / <code>subout.tech</code> 等。
+    </p>
+    <p>
+      <strong>台账</strong>：<code>scripts/stale_seen.json</code> 记录已产出过的域名，
+      避免每天重扫同一月份时把同一批候选反复喂给 LLM。
+    </p>
+
+    <h4>已废弃的通道</h4>
+    <div class="tscroll">
+      <table>
+        <caption>不可用通道与原因</caption>
+        <thead><tr><th scope="col">通道</th><th scope="col">状态</th><th scope="col">原因</th></tr></thead>
+        <tbody>
+          <tr><td>Indie Hackers</td><td>❌ 不可用</td><td>三个子 sitemap 合计 105829 个 URL，<code>/product/</code> 路径数 = <strong>0</strong>（全是 post 和 ideas）；<code>/products</code>、<code>/api/products</code> 均被 Cloudflare 403</td></tr>
+          <tr><td>GitHub 停更仓库</td><td>⏸ 备用</td><td>代码已就绪（<code>gh_stale_repos</code>），默认关闭，需要 <code>GITHUB_TOKEN</code></td></tr>
+          <tr><td>Wayback Machine</td><td>❌ 不可达</td><td>本环境对 <code>archive.org</code> 完全超时，无法用快照做二次证据</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 id="s4-6">4.6 人工内容层</h3>
+    <p>自动采集只负责<strong>基础事实</strong>（公司名、年份、行业、死因标签、时间线）。以下字段靠人工：</p>
+    <ul>
+      <li><code>epitaph</code>（墓志铭）—— 全站语感的来源</li>
+      <li><code>breakdown</code>（因果链）—— 最有价值的字段，LLM 抽不出真正的传导逻辑</li>
+      <li><code>lessons</code>（教训）</li>
+      <li><code>failure-chains</code> / <code>counterparts</code> / <code>self-check</code> 三个文件<strong>完全人工维护</strong></li>
+    </ul>
+
+    <h3 id="s4-7">4.7 内容质量红线</h3>
+    <p>写在 <code>docs/内容采集规则.md</code> 里，包括：</p>
+    <ul>
+      <li>收录门槛 5 条硬标准</li>
+      <li>去重规则（URL 归一化 + slug 唯一性）</li>
+      <li>死因体系（六主 + 十副，不能自创标签）</li>
+      <li>500 条部署门槛</li>
+      <li>来源必须可核（<code>sources</code> 字段不能空）</li>
+    </ul>
+  </section>
+
+  <!-- ══════════ 5 ══════════ -->
+  <section class="chapter" id="s5">
+    <div class="chapter-head"><span class="num">05</span><h2 class="ch">数据同步</h2></div>
+
+    <h3>5.1 问题</h3>
+    <p>
+      采集跑在 GitHub Actions（云端），它每天 push 一个 commit。但<strong>本地云盘工作区不会自动 pull</strong>。
+    </p>
+    <p>
+      结果：仓库里有 100 条，本地 demo 还停在 94 条。用户打开预览看到的永远是旧数据。
+    </p>
+    <div class="note warn">
+      <span class="lbl">交付前的实际状态</span>
+      <p>
+        <code>git fetch</code> 显示远端领先 1 个 commit
+        （<code>b5e2fad chore: daily case harvest 2026-11-12</code>），案例数 94 vs 100。
+      </p>
+    </div>
+
+    <h3>5.2 机制化修复：scripts/sync-remote.sh</h3>
+<pre><code>#!/bin/bash
+set -uo pipefail
+
+<span class="c"># 1) 没有 .git（跑在 /tmp 镜像里）直接退出</span>
+[ -d .git ] || exit 0
+
+BEFORE=$(count_cases)      <span class="c"># grep -c '^    slug: "' src/data/cases.ts</span>
+
+<span class="c"># 2) fetch，45 秒上限，失败就跳过（网络不好不能阻塞构建）</span>
+timeout 45 git fetch origin main --quiet 2&gt;/dev/null || exit 0
+
+<span class="c"># 3) 已是最新 / 本地领先 → 直接返回</span>
+<span class="c"># 4) 工作区有未提交改动 → 跳过，不把用户改动卷进合并</span>
+<span class="c"># 5) git merge --ff-only origin/main   只快进，永不产生冲突</span>
+<span class="c"># 6) 报告：BEFORE → AFTER 条案例</span></code></pre>
+    <p>设计原则：<strong>只做快进合并，任何一步失败都静默跳过，绝不阻塞构建。</strong></p>
+    <p>挂载位置在 <code>prepare.sh</code> 和 <code>dev.sh</code> 里，<code>exec</code> 到 /tmp 镜像<strong>之前</strong>：</p>
+<pre><code>if [[ "${COZE_WEB_LOCAL_ACTIVE:-}" != "${PROJECT_ROOT}" ]]; then
+  <span class="c"># 必须在云盘原件上同步——/tmp 镜像里没有 .git</span>
+  bash "${SCRIPT_DIR}/sync-remote.sh" || true
+  exec node "${SCRIPT_DIR}/local-workspace.cjs" prepare "$@"
+fi</code></pre>
+    <p>
+      这样每次启动 dev / 构建预览，都会先把远端每日采集的案例拉下来，再镜像、再构建。
+    </p>
+
+    <h3>5.3 手动操作</h3>
+<pre><code>cd /Coze/Drive/编程专家/opc-graveyard
+bash scripts/sync-remote.sh        <span class="c"># 单独跑一次同步</span>
+git log --oneline -3               <span class="c"># 确认拉到哪个 commit</span>
+grep -c '^    slug: "' src/data/cases.ts   <span class="c"># 确认案例数</span></code></pre>
+    <p>如果脚本报「工作区有未提交改动，跳过自动合并」，先处理未提交文件再重跑。</p>
+  </section>
+
+  <!-- ══════════ 6 ══════════ -->
+  <section class="chapter" id="s6">
+    <div class="chapter-head"><span class="num">06</span><h2 class="ch">已知边界与缺陷</h2></div>
+    <p>诚实列出来，避免后来者踩坑。</p>
+    <div class="tscroll">
+      <table>
+        <caption>已知问题清单</caption>
+        <thead><tr><th scope="col">问题</th><th scope="col">现状</th><th scope="col">影响</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">无后端</th><td>0 个 API 路由，投稿 / 订阅全靠 <code>mailto:</code></td><td>无法统计转化、无提交回执、依赖用户本地邮件客户端</td></tr>
+          <tr><th scope="row">未部署</th><td><code>opcgraveyard.com</code> DNS 解析失败；500 条门槛未达（当前 100）</td><td>只有本地 / 预览域可访问</td></tr>
+          <tr><th scope="row">industry 未归一化</th><td>「AI 远程医疗」「AI医疗」等近义值并存</td><td>筛选器里会出现重复选项，facet 计数被切碎</td></tr>
+          <tr><th scope="row">closedYear 格式不统一</th><td>有的是「2026」，有的是「约 2026 年」</td><td><code>localeCompare</code> 排序在边界情况下不严格</td></tr>
+          <tr><th scope="row">secondaryTags 有空值</th><td>部分案例为空数组</td><td>详情页徽章区可能只剩主标签</td></tr>
+          <tr><th scope="row">verified 仅 78%</th><td>78 / 100 已核实</td><td><code>/data</code> 页必须持续披露这个比例</td></tr>
+          <tr><th scope="row">弱引用静默失败</th><td>三个辅助数据文件用 slug 字符串引用案例</td><td>slug 写错不会报错，只是那条不显示</td></tr>
+          <tr><th scope="row">镜像与原件分离</th><td><code>/tmp</code> 镜像排除 <code>.git</code></td><td>任何 git 操作必须在 <code>exec</code> 之前完成</td></tr>
+          <tr><th scope="row">Algolia 分页上限</th><td><code>hitsPerPage * page ≤ 1000</code></td><td>只能按月切片，36 个月 18 天轮完一轮</td></tr>
+          <tr><th scope="row">Wayback 不可达</th><td><code>archive.org</code> 在本环境超时</td><td>沉默死亡的证据链只有「HN 帖子 + 域名失效」两条</td></tr>
+          <tr><th scope="row">bundle 随案例数增长</th><td>100 条 ≈ 4793 行 TS</td><td>到 500 条时需评估是否拆分 / 懒加载</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ══════════ 7 ══════════ -->
+  <section class="chapter" id="s7">
+    <div class="chapter-head"><span class="num">07</span><h2 class="ch">附：常用命令速查</h2></div>
+<pre><code><span class="c"># 项目根</span>
+cd /Coze/Drive/编程专家/opc-graveyard
+
+<span class="c"># 同步远端每日采集</span>
+bash scripts/sync-remote.sh
+
+<span class="c"># 本地开发（自动同步 + 镜像 + 启动）</span>
+pnpm dev
+
+<span class="c"># 类型 + lint 校验</span>
+pnpm validate
+
+<span class="c"># 生产构建</span>
+pnpm build
+
+<span class="c"># 手动跑一次采集（需要 LLM_API_KEY 等环境变量）</span>
+python scripts/case_harvest.py 30 730
+
+<span class="c"># 案例数</span>
+grep -c '^    slug: "' src/data/cases.ts</code></pre>
+
+    <footer>
+      <p>
+        本文档由代码调查生成，对应 commit <code>b5e2fad</code>。代码变更后请同步更新本文档。<br>
+        源文件：<code>docs/技术架构与页面逻辑.md</code>
+      </p>
+    </footer>
+  </section>
+
+</div>
+</main>
+</div>
+
+<script>
+(function(){
+  'use strict';
+  try{
+    document.addEventListener('click', function(e){
+      var a = e.target.closest ? e.target.closest('a[href^="#"]') : null;
+      if(!a) return;
+      var id = a.getAttribute('href').slice(1);
+      if(!id) return;
+      var target = document.getElementById(id);
+      if(!target) return;
+      e.preventDefault();
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      target.scrollIntoView({behavior: reduce ? 'auto' : 'smooth', block: 'start'});
+      if(history.replaceState){ history.replaceState(null, '', '#' + id); }
+    });
+  }catch(err){ /* 静态内容不受影响 */ }
+})();
+</script>
+</body>
+</html>
