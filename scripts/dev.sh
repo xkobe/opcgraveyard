@@ -5,6 +5,8 @@ set -Eeuo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd -P)"
 if [[ "${COZE_WEB_LOCAL_ACTIVE:-}" != "${PROJECT_ROOT}" ]]; then
+  # 同 prepare.sh：启动 dev server 前先把远端每日采集的数据拉下来
+  bash "${SCRIPT_DIR}/sync-remote.sh" || true
   exec node "${SCRIPT_DIR}/local-workspace.cjs" dev "$@"
 fi
 COZE_WORKSPACE_PATH="${PROJECT_ROOT}"
