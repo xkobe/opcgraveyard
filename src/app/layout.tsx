@@ -37,7 +37,10 @@ export const metadata: Metadata = {
 const NAV_ITEMS = [
   { href: '/', label: '首页' },
   { href: '/cases', label: '案例库' },
-  { href: '/duels', label: '同题对撞' },
+  { href: '/chains', label: '传导链' },
+  { href: '/check', label: '对照' },
+  { href: '/duels', label: '对撞' },
+  { href: '/data', label: '口径' },
   { href: '/contribute', label: '投稿' },
   { href: '/about', label: '关于' },
 ];
@@ -61,12 +64,12 @@ export default function RootLayout({
                 OPC GRAVEYARD
               </span>
             </Link>
-            <nav className="flex items-center gap-1 sm:gap-2">
+            <nav className="flex items-center gap-0.5 overflow-x-auto sm:gap-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {NAV_ITEMS.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="rounded-md px-2.5 py-1.5 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900"
+                  className="shrink-0 whitespace-nowrap rounded-md px-2 py-1.5 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900"
                 >
                   {item.label}
                 </Link>

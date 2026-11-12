@@ -59,18 +59,89 @@ export default function Home() {
             </div>
             <div className="flex shrink-0 flex-col gap-2">
               <Link
-                href="/cases"
+                href="/chains"
                 className="inline-flex items-center justify-center rounded-lg bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-zinc-700"
               >
-                浏览失败案例库
+                看死因怎么传导
               </Link>
               <Link
-                href="/contribute"
+                href="/check"
                 className="inline-flex items-center justify-center rounded-lg border border-zinc-300 bg-white px-5 py-2.5 text-sm font-medium text-zinc-800 transition-colors hover:border-zinc-500 hover:text-zinc-900"
               >
-                投稿你的失败故事
+                你现在在哪一格
+              </Link>
+              <Link
+                href="/cases"
+                className="inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white px-5 py-2 text-xs font-medium text-zinc-500 transition-colors hover:border-zinc-400 hover:text-zinc-800"
+              >
+                浏览全部案例库
               </Link>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 阅读路径：从「不知道」到「知道自己在哪」 */}
+      <section className="border-b border-zinc-200/80 bg-white">
+        <div className="mx-auto max-w-6xl px-4 py-9 sm:px-6">
+          <div className="mb-5 flex items-baseline justify-between">
+            <h2 className="text-base font-semibold text-zinc-900">
+              从哪开始读
+            </h2>
+            <span className="text-xs text-zinc-500">
+              四步，大约 12 分钟
+            </span>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              {
+                step: '01',
+                title: '先知道死于哪几类事',
+                desc: `全库 ${total} 条案例归成六个死因，下面就是分布。`,
+                href: '#causes',
+                cta: '看分布 ↓',
+              },
+              {
+                step: '02',
+                title: '再看死因怎么串起来',
+                desc: '六个标签不是六个格子。五条链，每一步都有案例。',
+                href: '/chains',
+                cta: '看传导链 →',
+              },
+              {
+                step: '03',
+                title: '然后对照你在哪一格',
+                desc: '六道题，问的是过去 4 周发生过什么。不给分数。',
+                href: '/check',
+                cta: '做对照 →',
+              },
+              {
+                step: '04',
+                title: '最后看具体的人',
+                desc: '每个项目都有时间线、尸检和公开出处。',
+                href: '/cases',
+                cta: '翻案例库 →',
+              },
+            ].map((s) => (
+              <Link
+                key={s.step}
+                href={s.href}
+                className="group flex flex-col rounded-xl border border-zinc-200 bg-white p-4 transition-colors hover:border-zinc-300 hover:bg-zinc-50"
+              >
+                <span className="font-mono text-[11px] text-zinc-300 group-hover:text-zinc-400">
+                  {s.step}
+                </span>
+                <span className="mt-1.5 text-sm font-semibold text-zinc-900">
+                  {s.title}
+                </span>
+                <span className="mt-1 flex-1 text-xs leading-6 text-zinc-500">
+                  {s.desc}
+                </span>
+                <span className="mt-3 text-[11px] font-medium text-zinc-600 group-hover:text-zinc-900">
+                  {s.cta}
+                </span>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
@@ -135,7 +206,7 @@ export default function Home() {
       </section>
 
       {/* 死因分布：紧凑横向统计条（带刻度） */}
-      <section className="border-b border-zinc-200/80 bg-white">
+      <section id="causes" className="scroll-mt-16 border-b border-zinc-200/80 bg-white">
         <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
           <div className="mb-4 flex items-baseline justify-between">
             <h2 className="text-base font-semibold text-zinc-900">
